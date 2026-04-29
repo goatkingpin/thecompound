@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compound Gain Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a3a;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #f1f1f3;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 20px 16px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(249,115,22,0.12);
+    border: 1px solid rgba(249,115,22,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: clamp(18px, 5vw, 24px);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .header p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 14px;
+  }
+
+  /* Inputs grid — responsive */
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .input-full { grid-column: 1 / -1; }
+  @media (max-width: 400px) {
+    .input-grid { grid-template-columns: 1fr; }
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .field input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+  }
+
+  /* Toggle rows */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toggle-label {
+    font-size: 13px;
+    color: var(--text2);
+    font-weight: 500;
+  }
+  .toggle-switch {
+    display: flex;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .toggle-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text2);
+    background: transparent;
+  }
+  .toggle-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Result card */
+  .result-card {
+    background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(249,115,22,0.05));
+    border: 1px solid rgba(249,115,22,0.3);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .result-left { flex: 1; min-width: 140px; }
+  .result-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .result-value {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    word-break: break-all;
+  }
+  .result-pct {
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .result-stats {
+    text-align: right;
+  }
+  .stat-item { margin-bottom: 6px; }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .stat-value {
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-all;
+  }
+  @media (max-width: 420px) {
+    .result-card { flex-direction: column; align-items: flex-start; }
+    .result-stats { text-align: left; width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .stat-item { margin-bottom: 0; }
+    .result-value { font-size: 22px; }
+  }
+
+  /* Calculate button */
+  .calc-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+  /* Table */
+  .table-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .table-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .rows-count {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Table outer wrapper */
+  .tbl-outer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+  .tbl-outer::-webkit-scrollbar { height: 3px; }
+  .tbl-outer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .tbl-inner { min-width: 0; width: 100%; }
+
+  .tbl-head {
+    display: grid;
+    grid-template-columns: 36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 60px;
+    gap: 4px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+  .tbl-head span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .tbl-head span:nth-child(n+3) { text-align: right; }
+
+  .tbl-body { display: flex; flex-direction: column; gap: 0; }
+
+  .tbl-row {
+    display: grid;
+    grid-template-columns: 36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 60px;
+    gap: 4px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .tbl-row:last-child { border-radius: 0 0 8px 8px; }
+  .tbl-row:hover { background: var(--surface2); }
+
+  .tbl-day {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Editable date cell */
+  .tbl-date {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow: hidden;
+  }
+  .date-input-wrap { position: relative; }
+  .date-display {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .date-display:hover { background: rgba(249,115,22,0.12); }
+  .date-edit-input {
+    width: 120px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text);
+    outline: none;
+    display: none;
+  }
+  .date-edit-input.visible { display: block; }
+
+  .tbl-profit {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .tbl-sum {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .tbl-balance {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Hint */
+  .edit-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .edit-hint span {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  /* Done checkbox */
+  .tbl-done {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .done-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: transparent;
+    flex-shrink: 0;
+  }
+  .done-btn:hover {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.08);
+  }
+  .done-btn.checked {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .tbl-row.done-row {
+    opacity: 0.55;
+  }
+  .tbl-row.done-row .tbl-balance {
+    text-decoration: line-through;
+    color: var(--text3);
+  }
+
+  /* Scrollable table wrapper */
+  .table-scroll {
+    max-height: 460px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .table-scroll::-webkit-scrollbar { width: 3px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Print button */
+  .print-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+  .print-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(249,115,22,0.06);
+  }
+  .print-btn svg { width: 15px; height: 15px; }
+
+  .pdf-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    background: rgba(249,115,22,0.1);
+    border: 1px solid rgba(249,115,22,0.4);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+  .pdf-btn:hover {
+    background: rgba(249,115,22,0.2);
+    border-color: var(--accent);
+  }
+  .pdf-btn:active { transform: scale(0.97); }
+  .pdf-btn svg { width: 15px; height: 15px; }
+  .btn-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  @media (max-width: 480px) {
+    .table-header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .btn-group { width: 100%; }
+    .print-btn, .pdf-btn { flex: 1; justify-content: center; font-size: 12px; padding: 9px 12px; }
+  }
+
+  /* ═══════════════════════════════════════
+     PRINT STYLES — A4
+  ═══════════════════════════════════════ */
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 15mm 12mm 15mm 12mm;
+    }
+
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-family: 'Space Grotesk', sans-serif !important;
+      padding: 0 !important;
+    }
+
+    /* Hide everything except print area */
+    .header, .card, .calc-btn, .print-btn, .edit-hint, .result-card { display: none !important; }
+    #tableSection { display: block !important; }
+    .table-scroll { max-height: none !important; overflow: visible !important; }
+
+    /* Print header */
+    .print-header { display: block !important; }
+
+    /* Table styles untuk print */
+    .tbl-head, .tbl-row {
+      background: #ffffff !important;
+      border-color: #cccccc !important;
+      color: #000000 !important;
+      break-inside: avoid;
+    }
+    .tbl-head {
+      background: #f5f5f5 !important;
+      border-radius: 0 !important;
+    }
+    .tbl-head span {
+      color: #444444 !important;
+      font-size: 9pt !important;
+    }
+    .tbl-row {
+      padding: 7px 12px !important;
+      page-break-inside: avoid;
+    }
+    .tbl-day   { color: #666666 !important; font-size: 9pt !important; }
+    .tbl-profit { color: #1a7a3a !important; font-size: 9pt !important; }
+    .tbl-sum   { color: #444444 !important; font-size: 9pt !important; }
+    .tbl-balance { color: #000000 !important; font-size: 9pt !important; }
+    .tbl-date  { font-size: 9pt !important; }
+    .date-display { color: #c65000 !important; font-size: 9pt !important; }
+    .date-edit-input { display: none !important; }
+
+    .table-header-row { margin-bottom: 6px !important; }
+    .tbl-body > div:nth-child(even) { background: #fafafa !important; }
+
+    /* Print summary box */
+    .print-summary { display: block !important; }
+  }
+
+  /* Hide print elements on screen */
+  .print-header { display: none; }
+  .print-summary { display: none; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">⚡ Compound Calculator</div>
+  <h1>Compound Gain</h1>
+  <p>Hitung pertumbuhan majemuk harian</p>
+</div>
+
+<!-- Input Card -->
+<div class="card">
+  <div class="card-title">Parameter</div>
+  <div class="input-grid">
+    <div class="field">
+      <label>Principal ($)</label>
+      <input type="number" id="principal" value="1000" min="0" step="100">
+    </div>
+    <div class="field">
+      <label>Profit Rate (%)</label>
+      <input type="number" id="profitRate" value="1" min="0.01" max="100" step="0.1">
+    </div>
+    <div class="field">
+      <label>Jumlah Hari</label>
+      <input type="number" id="days" value="20" min="1" max="365">
+    </div>
+    <div class="field">
+      <label>Tanggal Mulai</label>
+      <input type="date" id="startDate">
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Mata Uang</span>
+    <div class="toggle-switch">
+      <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD $</button>
+      <button class="toggle-btn" id="btnIDR" onclick="setCurrency('IDR')">IDR Rp</button>
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Termasuk Weekend?</span>
+    <div class="toggle-switch">
+      <button class="toggle-btn active" id="btnYes" onclick="setWeekend(true)">Ya</button>
+      <button class="toggle-btn" id="btnNo" onclick="setWeekend(false)">Tidak</button>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Hitung ⟶</button>
+</div>
+
+<!-- Result Card -->
+<div class="result-card" id="resultCard" style="display:none">
+  <div class="result-left">
+    <div class="result-label">Total Balance</div>
+    <div class="result-value" id="totalBalance">$0.00</div>
+    <div class="result-pct" id="totalPct">+0.00%</div>
+  </div>
+  <div class="result-stats">
+    <div class="stat-item">
+      <div class="stat-label">Total Profit</div>
+      <div class="stat-value" id="totalProfit">$0.00</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Avg / Hari</div>
+      <div class="stat-value" id="avgDaily">$0.00</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Hari Trading</div>
+      <div class="stat-value" id="tradingDays">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div id="tableSection" style="display:none">
+
+  <!-- Print header — only visible when printing -->
+  <div class="print-header" id="printHeader">
+    <div style="border-bottom:2px solid #e0e0e0;padding-bottom:12px;margin-bottom:16px;">
+      <div style="font-size:18pt;font-weight:700;color:#000;margin-bottom:4px;">Compound Gain Report</div>
+      <div style="font-size:9pt;color:#666;" id="printSubtitle">—</div>
+    </div>
+    <div class="print-summary" id="printSummary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;border:1px solid #e0e0e0;border-radius:6px;padding:12px;">
+      <div style="border-right:1px solid #e0e0e0;padding-right:10px;">
+        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Principal</div>
+        <div style="font-size:13pt;font-weight:700;color:#000;" id="ps-principal">—</div>
+      </div>
+      <div style="border-right:1px solid #e0e0e0;padding:0 10px;">
+        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Balance</div>
+        <div style="font-size:13pt;font-weight:700;color:#000;" id="ps-balance">—</div>
+      </div>
+      <div style="border-right:1px solid #e0e0e0;padding:0 10px;">
+        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Profit</div>
+        <div style="font-size:13pt;font-weight:700;color:#1a7a3a;" id="ps-profit">—</div>
+      </div>
+      <div style="padding-left:10px;">
+        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Gain</div>
+        <div style="font-size:13pt;font-weight:700;color:#c65000;" id="ps-pct">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-header-row">
+    <div class="table-title">Rincian Harian</div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="rows-count" id="rowsCount">0 hari</div>
+      <div class="rows-count" id="doneCounter" style="color:var(--text3);">0 / 0 done</div>
+      <div class="btn-group">
+        <button class="print-btn" onclick="doPrint()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="7" width="10" height="7" rx="1"/>
+            <path d="M5 7V3h6v4"/>
+            <path d="M5 11h6"/>
+            <path d="M5 13h3"/>
+            <rect x="11" y="8.5" width="1.5" height="1.5" rx="0.5" fill="currentColor" stroke="none"/>
+          </svg>
+          Print A4
+        </button>
+        <button class="pdf-btn" onclick="exportPDF()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z"/>
+            <path d="M9 2v4h4"/>
+            <path d="M5.5 10h5M5.5 8h3"/>
+          </svg>
+          Export PDF
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="edit-hint">
+    Tap tanggal <span>orange</span> untuk edit
+  </div>
+  <div class="tbl-outer">
+    <div class="tbl-inner">
+      <div class="tbl-head">
+        <span>#</span>
+        <span>Tanggal</span>
+        <span style="text-align:right">Profit</span>
+        <span style="text-align:right">Σ Profit</span>
+        <span style="text-align:right">Balance</span>
+        <span style="text-align:center">Done</span>
+      </div>
+      <div class="table-scroll">
+        <div class="tbl-body" id="tableBody"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let includeWeekends = true;
+  let tableData = [];
+  let doneState = {};
+  let currency = 'USD';
+
+  function setCurrency(c) {
+    currency = c;
+    document.getElementById('btnUSD').classList.toggle('active', c === 'USD');
+    document.getElementById('btnIDR').classList.toggle('active', c === 'IDR');
+    // Update principal placeholder
+    const inp = document.getElementById('principal');
+    if (c === 'IDR') {
+      inp.placeholder = 'e.g. 15000000';
+      if (parseFloat(inp.value) < 1000) inp.value = '10000000';
+    } else {
+      inp.placeholder = 'e.g. 1000';
+      if (parseFloat(inp.value) >= 100000) inp.value = '1000';
+    }
+  }
+
+  // Set today as default start date
+  const today = new Date();
+  document.getElementById('startDate').value = today.toISOString().split('T')[0];
+
+  function setWeekend(val) {
+    includeWeekends = val;
+    document.getElementById('btnYes').classList.toggle('active', val);
+    document.getElementById('btnNo').classList.toggle('active', !val);
+  }
+
+  const DAYS_ID = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  const MONTHS_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+
+  function formatDate(d) {
+    const day = d.getDate().toString().padStart(2,'0');
+    const month = MONTHS_ID[d.getMonth()];
+    const year = d.getFullYear();
+    const dow = DAYS_ID[d.getDay()];
+    return `${day} ${month} ${year} ${dow}`;
+  }
+
+  function formatDateShort(d) {
+    const day = d.getDate().toString().padStart(2,'0');
+    const month = MONTHS_ID[d.getMonth()];
+    const year = d.getFullYear();
+    const dow = DAYS_ID[d.getDay()];
+    return `${day} ${month} ${year} ${dow}`;
+  }
+
+  function fmtMoney(v, dec) {
+    if (currency === 'IDR') {
+      const d = dec !== undefined ? dec : 0;
+      return 'Rp ' + Math.round(v).toLocaleString('id-ID', {minimumFractionDigits:d, maximumFractionDigits:d});
+    }
+    const d = dec !== undefined ? dec : 2;
+    return '$' + v.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+  }
+
+  function isWeekend(d) {
+    return d.getDay() === 0 || d.getDay() === 6;
+  }
+
+  function getInputDate() {
+    const val = document.getElementById('startDate').value;
+    if (!val) return new Date();
+    const [y,m,d] = val.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+
+  function calculate() {
+    const principal  = parseFloat(document.getElementById('principal').value) || 1000;
+    const rate       = parseFloat(document.getElementById('profitRate').value) || 1;
+    const numDays    = parseInt(document.getElementById('days').value) || 20;
+    const startDate  = getInputDate();
+
+    tableData = [];
+    doneState = {};
+    let balance    = principal;
+    let cumProfit  = 0;
+    let currentDate = new Date(startDate);
+    let dayCount   = 0;
+
+    while (dayCount < numDays) {
+      if (!includeWeekends && isWeekend(currentDate)) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        continue;
+      }
+      dayCount++;
+      const dailyProfit = balance * (rate / 100);
+      cumProfit  += dailyProfit;
+      balance    += dailyProfit;
+
+      tableData.push({
+        day      : dayCount,
+        date     : new Date(currentDate),
+        dateStr  : formatDateShort(currentDate),
+        profit   : dailyProfit,
+        cumProfit: cumProfit,
+        balance  : balance
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Update result card
+    const totalProfit = balance - principal;
+    const pct = (totalProfit / principal * 100).toFixed(2);
+    const avgDaily = totalProfit / numDays;
+
+    document.getElementById('totalBalance').textContent = fmtMoney(balance);
+    document.getElementById('totalPct').textContent = '+' + pct + '%';
+    document.getElementById('totalProfit').textContent = fmtMoney(totalProfit);
+    document.getElementById('avgDaily').textContent = fmtMoney(avgDaily);
+    document.getElementById('tradingDays').textContent = numDays;
+    document.getElementById('rowsCount').textContent = numDays + ' hari';
+
+    document.getElementById('resultCard').style.display = 'flex';
+    document.getElementById('tableSection').style.display = 'block';
+
+    renderTable();
+
+    // Update print summary
+    const pctNum = (totalProfit / principal * 100).toFixed(2);
+    document.getElementById('ps-principal').textContent  = fmtMoney(principal);
+    document.getElementById('ps-balance').textContent   = fmtMoney(balance);
+    document.getElementById('ps-profit').textContent    = fmtMoney(totalProfit);
+    document.getElementById('ps-pct').textContent       = '+' + pctNum + '%';
+
+    const startD = getInputDate();
+    const endD   = tableData[tableData.length - 1]?.date || startD;
+    const wkndTxt = includeWeekends ? 'Termasuk weekend' : 'Tanpa weekend';
+    document.getElementById('printSubtitle').textContent =
+      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' +
+      wkndTxt + '  |  ' +
+      startD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) +
+      ' — ' +
+      endD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'});
+  }
+
+  function doPrint() {
+    window.print();
+  }
+
+  function renderTable() {
+    const body = document.getElementById('tableBody');
+    body.innerHTML = '';
+
+    tableData.forEach((row, idx) => {
+      const isDone = !!doneState[idx];
+      const div = document.createElement('div');
+      div.className = 'tbl-row' + (isDone ? ' done-row' : '');
+      div.innerHTML = `
+        <div class="tbl-day">${row.day}</div>
+        <div class="tbl-date">
+          <div class="date-input-wrap">
+            <span class="date-display" onclick="toggleDateEdit(${idx})" id="disp-${idx}">${row.dateStr}</span>
+            <input class="date-edit-input" type="date" id="dinp-${idx}"
+              value="${row.date.toISOString().split('T')[0]}"
+              onchange="updateDate(${idx}, this.value)"
+              onblur="closeDateEdit(${idx})">
+          </div>
+        </div>
+        <div class="tbl-profit">${fmtMoney(row.profit)}</div>
+        <div class="tbl-sum">${fmtMoney(row.cumProfit)}</div>
+        <div class="tbl-balance">${fmtMoney(row.balance)}</div>
+        <div class="tbl-done">
+          <button class="done-btn ${isDone ? 'checked' : ''}"
+            onclick="toggleDone(${idx})"
+            title="${isDone ? 'Tandai belum selesai' : 'Tandai selesai'}">
+            ${isDone ? '✓' : ''}
+          </button>
+        </div>
+      `;
+      body.appendChild(div);
+    });
+
+    // Update done counter
+    updateDoneCounter();
+  }
+
+  function toggleDateEdit(idx) {
+    const disp = document.getElementById('disp-' + idx);
+    const inp  = document.getElementById('dinp-' + idx);
+    disp.style.display = 'none';
+    inp.classList.add('visible');
+    inp.focus();
+  }
+
+  function closeDateEdit(idx) {
+    const disp = document.getElementById('disp-' + idx);
+    const inp  = document.getElementById('dinp-' + idx);
+    disp.style.display = 'inline-block';
+    inp.classList.remove('visible');
+  }
+
+  function updateDate(idx, newVal) {
+    if (!newVal) return;
+    const [y,m,d] = newVal.split('-').map(Number);
+    const newDate = new Date(y, m-1, d);
+    tableData[idx].date    = newDate;
+    tableData[idx].dateStr = formatDateShort(newDate);
+    closeDateEdit(idx);
+    renderTable();
+
+    // Update print summary
+    const pctNum = (totalProfit / principal * 100).toFixed(2);
+    document.getElementById('ps-principal').textContent  = fmtMoney(principal);
+    document.getElementById('ps-balance').textContent   = fmtMoney(balance);
+    document.getElementById('ps-profit').textContent    = fmtMoney(totalProfit);
+    document.getElementById('ps-pct').textContent       = '+' + pctNum + '%';
+
+    const startD = getInputDate();
+    const endD   = tableData[tableData.length - 1]?.date || startD;
+    const wkndTxt = includeWeekends ? 'Termasuk weekend' : 'Tanpa weekend';
+    document.getElementById('printSubtitle').textContent =
+      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' +
+      wkndTxt + '  |  ' +
+      startD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) +
+      ' — ' +
+      endD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'});
+  }
+
+  function doPrint() {
+    window.print();
+  }
+
+  function toggleDone(idx) {
+    doneState[idx] = !doneState[idx];
+    renderTable();
+  }
+
+  function updateDoneCounter() {
+    const total = tableData.length;
+    const done  = Object.values(doneState).filter(Boolean).length;
+    const el    = document.getElementById('doneCounter');
+    if (el) {
+      el.textContent = done + ' / ' + total + ' done';
+      el.style.color = done === total && total > 0 ? 'var(--green)' : 'var(--text3)';
+    }
+  }
+
+  // Auto calculate on load
+  calculate();
+
+  // ═══ Export PDF ═══════════════════════════════════════════
+  function exportPDF() {
+    if (!tableData || tableData.length === 0) {
+      alert('Klik Calculate dulu sebelum export PDF!');
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const principal  = parseFloat(document.getElementById('principal').value) || 1000;
+    const rate       = parseFloat(document.getElementById('profitRate').value) || 1;
+    const numDays    = parseInt(document.getElementById('days').value) || 20;
+    const wkndTxt    = includeWeekends ? 'Termasuk Weekend' : 'Tanpa Weekend';
+
+    const lastRow   = tableData[tableData.length - 1];
+    const totalBal  = lastRow.balance;
+    const totalProf = totalBal - principal;
+    const pct       = (totalProf / principal * 100).toFixed(2);
+
+    const pageW = doc.internal.pageSize.getWidth();
+    const margin = 14;
+    let y = 16;
+
+    // ── Header ──────────────────────────────────────────────
+    doc.setFillColor(249, 115, 22);
+    doc.rect(0, 0, pageW, 28, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('COMPOUND GAIN REPORT', margin, 12);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(
+      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' + wkndTxt +
+      '  |  ' + (tableData[0]?.dateStr || '') + ' s/d ' + (lastRow?.dateStr || ''),
+      margin, 20
+    );
+
+    // Generated date
+    const genDate = new Date().toLocaleDateString('id-ID', {
+      day: '2-digit', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    doc.setFontSize(7);
+    doc.setTextColor(255, 220, 180);
+    doc.text('Generated: ' + genDate, pageW - margin, 20, { align: 'right' });
+
+    y = 38;
+
+    // ── Summary boxes ────────────────────────────────────────
+    const boxW = (pageW - margin * 2 - 9) / 4;
+    const summaries = [
+      { label: 'PRINCIPAL',    value: fmtMoney(principal),  color: [30, 30, 40] },
+      { label: 'TOTAL BALANCE',value: fmtMoney(totalBal),   color: [30, 30, 40] },
+      { label: 'TOTAL PROFIT', value: fmtMoney(totalProf),  color: [10, 100, 50] },
+      { label: 'TOTAL GAIN',   value: '+' + pct + '%',      color: [200, 80, 10] },
+    ];
+
+    summaries.forEach((s, i) => {
+      const bx = margin + i * (boxW + 3);
+      doc.setFillColor(245, 245, 248);
+      doc.roundedRect(bx, y, boxW, 18, 2, 2, 'F');
+      doc.setDrawColor(220, 220, 228);
+      doc.roundedRect(bx, y, boxW, 18, 2, 2, 'S');
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(140, 140, 160);
+      doc.text(s.label, bx + boxW / 2, y + 5.5, { align: 'center' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...s.color);
+      doc.text(s.value, bx + boxW / 2, y + 13, { align: 'center' });
+    });
+
+    y += 26;
+
+    // ── Table ─────────────────────────────────────────────────
+    const rows = tableData.map((r, i) => [
+      r.day,
+      r.dateStr,
+      fmtMoney(r.profit),
+      fmtMoney(r.cumProfit),
+      fmtMoney(r.balance),
+      doneState[i] ? '✓' : '○'
+    ]);
+
+    doc.autoTable({
+      startY: y,
+      head: [['#', 'Tanggal', 'Daily Profit', 'Σ Profit', 'Balance', 'Done']],
+      body: rows,
+      margin: { left: margin, right: margin },
+      styles: {
+        fontSize: 8,
+        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+        font: 'helvetica',
+        lineColor: [220, 220, 228],
+        lineWidth: 0.3,
+        textColor: [30, 30, 40],
+      },
+      headStyles: {
+        fillColor: [30, 30, 42],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 8,
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'left',   cellWidth: 42, textColor: [180, 80, 10] },
+        2: { halign: 'right',  cellWidth: 34, textColor: [10, 120, 60] },
+        3: { halign: 'right',  cellWidth: 34, textColor: [60, 60, 80]  },
+        4: { halign: 'right',  cellWidth: 46, fontStyle: 'bold' },
+        5: { halign: 'center', cellWidth: 14, textColor: [10, 120, 60] },
+      },
+      alternateRowStyles: { fillColor: [249, 249, 252] },
+      didDrawPage: function(data) {
+        // Footer di setiap halaman
+        const pTotal = doc.internal.getNumberOfPages();
+        const pCur   = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFontSize(7);
+        doc.setTextColor(160, 160, 175);
+        doc.setFont('helvetica', 'normal');
+        doc.text(
+          'Compound Gain Report  |  Halaman ' + pCur + ' dari ' + pTotal,
+          pageW / 2,
+          doc.internal.pageSize.getHeight() - 8,
+          { align: 'center' }
+        );
+        doc.text(
+          'Principal: ' + fmtMoney(principal) + '  |  Rate: ' + rate + '%/hari  |  ' + numDays + ' hari',
+          margin,
+          doc.internal.pageSize.getHeight() - 8
+        );
+      },
+      willDrawCell: function(data) {
+        // Highlight baris terakhir
+        if (data.row.index === tableData.length - 1 && data.section === 'body') {
+          data.cell.styles.fillColor = [255, 242, 230];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    });
+
+    // ── Save ──────────────────────────────────────────────────
+    const currSymbol = currency === 'IDR' ? 'IDR' : 'USD';
+    const filename = 'compound-gain-' + currSymbol + '-' + rate + 'pct-' + numDays + 'hari.pdf';
+    doc.save(filename);
+  }
+</script>
+</body>
+</html>
