@@ -494,6 +494,55 @@
     flex-wrap: wrap;
     justify-content: flex-end;
   }
+  .save-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.4);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+  .save-btn:hover { background: rgba(34,197,94,0.2); }
+  .save-btn:active { transform: scale(0.97); }
+  .save-btn svg { width: 15px; height: 15px; }
+  .save-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 22px;
+    border-radius: 30px;
+    transition: transform 0.3s ease, opacity 0.3s;
+    opacity: 0;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .save-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .saved-badge {
+    font-size: 10px;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-weight: 600;
+    display: none;
+  }
+  .saved-badge.show { display: inline-block; }
   @media (max-width: 480px) {
     .table-header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
     .btn-group { width: 100%; }
@@ -573,6 +622,7 @@
   <div class="header-badge">⚡ Compound Calculator</div>
   <h1>Compound Gain</h1>
   <p>Hitung pertumbuhan majemuk harian</p>
+  <div class="saved-badge" id="savedBadge" style="margin-top:8px;"></div>
 </div>
 
 <!-- Input Card -->
@@ -945,6 +995,15 @@
   function toggleDone(idx) {
     doneState[idx] = !doneState[idx];
     renderTable();
+    // Auto-save doneState ke localStorage
+    const raw = localStorage.getItem('compoundData');
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        data.doneState = doneState;
+        localStorage.setItem('compoundData', JSON.stringify(data));
+      } catch(e) {}
+    }
   }
 
   function updateDoneCounter() {
@@ -957,7 +1016,58 @@
     }
   }
 
+  // ═══ SAVE / LOAD DATA ════════════════════════════════════
+  function saveData() {
+    const data = {
+      principal  : document.getElementById('principal').value,
+      profitRate : document.getElementById('profitRate').value,
+      days       : document.getElementById('days').value,
+      startDate  : document.getElementById('startDate').value,
+      currency   : currency,
+      weekends   : includeWeekends,
+      doneState  : doneState,
+      savedAt    : new Date().toLocaleString('id-ID')
+    };
+    localStorage.setItem('compoundData', JSON.stringify(data));
+
+    // Show toast
+    const toast = document.getElementById('saveToast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+
+    // Show saved badge in header
+    const badge = document.getElementById('savedBadge');
+    if (badge) {
+      badge.textContent = 'Tersimpan ' + data.savedAt;
+      badge.classList.add('show');
+    }
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem('compoundData');
+    if (!raw) return false;
+    try {
+      const data = JSON.parse(raw);
+      if (data.principal)  document.getElementById('principal').value  = data.principal;
+      if (data.profitRate) document.getElementById('profitRate').value = data.profitRate;
+      if (data.days)       document.getElementById('days').value       = data.days;
+      if (data.startDate)  document.getElementById('startDate').value  = data.startDate;
+      if (data.currency)   setCurrency(data.currency);
+      if (data.weekends !== undefined) setWeekend(data.weekends);
+      if (data.doneState)  doneState = data.doneState;
+
+      // Show saved badge
+      const badge = document.getElementById('savedBadge');
+      if (badge && data.savedAt) {
+        badge.textContent = 'Data terakhir: ' + data.savedAt;
+        badge.classList.add('show');
+      }
+      return true;
+    } catch(e) { return false; }
+  }
+
   // Auto calculate on load
+  const hasData = loadData();
   calculate();
 
   // ═══ Export PDF ═══════════════════════════════════════════
@@ -1114,5 +1224,6 @@
     doc.save(filename);
   }
 </script>
+<div class="save-toast" id="saveToast">✓ Data tersimpan!</div>
 </body>
 </html>
