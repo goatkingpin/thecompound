@@ -1,628 +1,267 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0059)file:///C:/Users/User/Downloads/compound_calculator_28.html -->
+<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compound Gain Calculator</title>
+<script src="./index_files/jspdf.umd.min.js.download"></script>
+<script src="./index_files/jspdf.plugin.autotable.min.js.download"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c26;
+  --border: #2a2a3a;
+  --accent: #f97316;
+  --green: #22c55e;
+  --red: #ef4444;
+  --text: #f1f1f3;
+  --text2: #9090a8;
+  --text3: #5a5a72;
+  --navy: #1e2a4a;
+  --purple: #8b5cf6;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  padding: 20px 16px 80px;
+}
 
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c26;
-    --border: #2a2a3a;
-    --accent: #f97316;
-    --accent2: #fb923c;
-    --green: #22c55e;
-    --red: #ef4444;
-    --text: #f1f1f3;
-    --text2: #9090a8;
-    --text3: #5a5a72;
-  }
+/* ── Header ── */
+.header { text-align:center; margin-bottom:24px; }
+.badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(249,115,22,0.12); border:1px solid rgba(249,115,22,0.3);
+  border-radius:20px; padding:4px 14px; font-size:11px; font-weight:600;
+  letter-spacing:0.1em; color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+}
+.header h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; }
+.tagline { font-size:12px; font-style:italic; color:var(--accent); font-weight:500; margin-top:4px; }
+.saved-badge {
+  display:none; margin-top:8px; font-size:10px; font-weight:600;
+  background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3);
+  color:var(--green); border-radius:6px; padding:2px 10px;
+}
+.saved-badge.show { display:inline-block; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── Card ── */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:20px; margin-bottom:16px;
+}
+.card-title {
+  font-size:11px; font-weight:600; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--text3); margin-bottom:14px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Space Grotesk', sans-serif;
-    min-height: 100vh;
-    padding: 20px 16px 60px;
-  }
+/* ── Input grid ── */
+.input-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+@media(max-width:400px) { .input-grid { grid-template-columns:1fr; } }
+.field label {
+  display:block; font-size:10px; font-weight:600; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--text3); margin-bottom:5px;
+}
+.field input {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:10px 12px; font-size:15px; font-weight:600;
+  color:var(--text); outline:none; -webkit-appearance:none; transition:border-color .2s;
+}
+.field input:focus { border-color:var(--accent); }
+.field input[type="date"] { font-size:13px; }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(249,115,22,0.12);
-    border: 1px solid rgba(249,115,22,0.3);
-    border-radius: 20px;
-    padding: 4px 14px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .header h1 {
-    font-size: clamp(18px, 5vw, 24px);
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-  .header p {
-    font-size: 12px;
-    color: var(--text2);
-    margin-top: 4px;
-  }
+/* ── Toggle row ── */
+.toggle-row {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--surface2); border:1px solid var(--border); border-radius:10px;
+  padding:10px 14px; margin-bottom:12px; gap:8px; flex-wrap:wrap;
+}
+.toggle-row span { font-size:13px; color:var(--text2); font-weight:500; }
+.tog { display:flex; background:var(--bg); border-radius:7px; padding:3px; gap:2px; }
+.tog button {
+  padding:5px 14px; border-radius:5px; font-size:12px; font-weight:600;
+  border:none; cursor:pointer; color:var(--text2); background:transparent;
+  transition:all .15s; font-family:inherit;
+}
+.tog button.on { background:var(--accent); color:#fff; }
 
-  /* Card */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 14px;
-  }
+/* ── Calc button ── */
+.calc-btn {
+  width:100%; padding:14px; background:var(--accent); border:none; border-radius:12px;
+  font-size:15px; font-weight:700; color:#fff; cursor:pointer; font-family:inherit;
+  letter-spacing:0.02em; transition:opacity .15s,transform .1s;
+}
+.calc-btn:active { transform:scale(0.98); opacity:.9; }
 
-  /* Inputs grid — responsive */
-  .input-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .input-full { grid-column: 1 / -1; }
-  @media (max-width: 400px) {
-    .input-grid { grid-template-columns: 1fr; }
-  }
+/* ── Result card ── */
+.result-card {
+  display:none; background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(249,115,22,.05));
+  border:1px solid rgba(249,115,22,.3); border-radius:16px; padding:16px 18px;
+  margin-bottom:16px; gap:12px; flex-wrap:wrap;
+}
+.result-card.show { display:flex; align-items:center; justify-content:space-between; }
+.result-main .lbl { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+.result-main .val { font-size:26px; font-weight:700; word-break:break-all; }
+.result-main .gain { font-size:13px; color:var(--green); font-weight:600; margin-top:2px; }
+.result-side { text-align:right; }
+.mini { margin-bottom:6px; }
+.mini .l { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; }
+.mini .v { font-size:13px; font-weight:600; word-break:break-all; }
+@media(max-width:420px) {
+  .result-card { flex-direction:column; align-items:flex-start; }
+  .result-side { text-align:left; width:100%; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .mini { margin-bottom:0; }
+}
 
-  .field label {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
-    margin-bottom: 6px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .field input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    font-size: 15px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-  }
-  .field input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
-  }
+/* ── Table section ── */
+.tbl-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:8px; flex-wrap:wrap; }
+.tbl-title { font-size:13px; font-weight:700; }
+.tbl-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.tbl-count { font-size:11px; color:var(--text3); }
+.done-count { font-size:11px; color:var(--text3); }
+.edit-hint { text-align:center; font-size:10px; color:var(--text3); margin-bottom:8px; }
+.edit-hint b { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:10px; color:var(--accent); }
 
-  /* Toggle rows */
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin-bottom: 12px;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .toggle-label {
-    font-size: 13px;
-    color: var(--text2);
-    font-weight: 500;
-  }
-  .toggle-switch {
-    display: flex;
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 3px;
-    gap: 2px;
-  }
-  .toggle-btn {
-    padding: 5px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text2);
-    background: transparent;
-  }
-  .toggle-btn.active {
-    background: var(--accent);
-    color: white;
-  }
+/* ── Buttons ── */
+.btn-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+@media(max-width:480px) {
+  .tbl-header { flex-direction:column; align-items:flex-start; }
+  .btn-group { width:100%; }
+}
+.btn {
+  display:flex; align-items:center; gap:6px; padding:9px 14px; border-radius:9px;
+  font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s;
+  border:1px solid;
+}
+.btn svg { width:13px; height:13px; }
+.btn-print { background:transparent; border-color:var(--border); color:var(--text2); }
+.btn-print:hover { border-color:var(--accent); color:var(--accent); }
+.btn-pdf   { background:rgba(249,115,22,.1); border-color:rgba(249,115,22,.4); color:var(--accent); }
+.btn-pdf:hover { background:rgba(249,115,22,.2); }
+.btn-save  { background:rgba(34,197,94,.1); border-color:rgba(34,197,94,.4); color:var(--green); }
+.btn-save:hover { background:rgba(34,197,94,.2); }
+.btn:active { transform:scale(0.97); }
 
-  /* Result card */
-  .result-card {
-    background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(249,115,22,0.05));
-    border: 1px solid rgba(249,115,22,0.3);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .result-left { flex: 1; min-width: 140px; }
-  .result-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-  .result-value {
-    font-size: 26px;
-    font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text);
-    letter-spacing: -0.02em;
-    word-break: break-all;
-  }
-  .result-pct {
-    font-size: 13px;
-    color: var(--green);
-    font-weight: 600;
-    margin-top: 4px;
-  }
-  .result-stats {
-    text-align: right;
-  }
-  .stat-item { margin-bottom: 6px; }
-  .stat-label {
-    font-size: 10px;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .stat-value {
-    font-size: 13px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    color: var(--text);
-    word-break: break-all;
-  }
-  @media (max-width: 420px) {
-    .result-card { flex-direction: column; align-items: flex-start; }
-    .result-stats { text-align: left; width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .stat-item { margin-bottom: 0; }
-    .result-value { font-size: 22px; }
-  }
+/* ── Table ── */
+.tbl-outer { overflow-x:auto; -webkit-overflow-scrolling:touch; width:100%; }
+.tbl-outer::-webkit-scrollbar { height:3px; }
+.tbl-outer::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+.tbl-inner { min-width:0; width:100%; }
 
-  /* Calculate button */
-  .calc-btn {
-    width: 100%;
-    padding: 15px;
-    background: var(--accent);
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: 0.04em;
-    transition: all 0.2s;
-    margin-bottom: 20px;
-  }
-  .calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+.tbl-head {
+  display:grid;
+  grid-template-columns:36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 90px;
+  gap:4px; padding:8px 12px; background:var(--surface2);
+  border-radius:8px 8px 0 0; border:1px solid var(--border); border-bottom:none;
+}
+.tbl-head span { font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); }
+.tbl-head span:nth-child(n+3):not(:last-child) { text-align:right; }
+.tbl-head span:last-child { text-align:center; }
 
-  /* Table */
-  .table-header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .table-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .rows-count {
-    font-size: 11px;
-    color: var(--text3);
-    font-family: 'JetBrains Mono', monospace;
-  }
+.tbl-body { display:flex; flex-direction:column; }
 
-  /* Table outer wrapper */
-  .tbl-outer {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 4px;
-    width: 100%;
-  }
-  .tbl-outer::-webkit-scrollbar { height: 3px; }
-  .tbl-outer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.tbl-row {
+  display:grid;
+  grid-template-columns:36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 90px;
+  gap:4px; padding:8px 12px; background:var(--surface);
+  border:1px solid var(--border); border-top:none; align-items:center; transition:background .15s;
+}
+.tbl-row:last-child { border-radius:0 0 8px 8px; }
+.tbl-row:hover { background:var(--surface2); }
+.tbl-row.done-row { opacity:.55; }
+.tbl-row.done-row .r-bal { text-decoration:line-through; color:var(--text3); }
 
-  .tbl-inner { min-width: 0; width: 100%; }
+.tbl-scroll { max-height:460px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.tbl-scroll::-webkit-scrollbar { width:3px; }
+.tbl-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  .tbl-head {
-    display: grid;
-    grid-template-columns: 36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 60px;
-    gap: 4px;
-    padding: 8px 12px;
-    background: var(--surface2);
-    border-radius: 8px 8px 0 0;
-    border: 1px solid var(--border);
-    border-bottom: none;
-  }
-  .tbl-head span {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text3);
-  }
-  .tbl-head span:nth-child(n+3) { text-align: right; }
+.r-day  { font-size:11px; font-weight:600; color:var(--text3); }
+.r-date { font-size:11px; font-weight:500; color:var(--accent); cursor:pointer; border-radius:4px; padding:2px 3px; transition:background .15s; display:inline-block; white-space:nowrap; }
+.r-date:hover { background:rgba(249,115,22,.15); }
+.r-date-input {
+  width:120px; background:var(--surface2); border:1px solid var(--accent);
+  border-radius:5px; padding:2px 5px; font-size:11px; color:var(--text); outline:none;
+  display:none; font-family:inherit;
+}
+.r-date-input.show { display:block; }
+.r-profit { font-size:11px; font-weight:500; color:var(--green); text-align:right; white-space:nowrap; }
+.r-sum    { font-size:11px; font-weight:500; color:var(--text2); text-align:right; white-space:nowrap; }
+.r-bal    { font-size:11px; font-weight:700; text-align:right; white-space:nowrap; }
+.r-done   { display:flex; align-items:center; justify-content:center; }
 
-  .tbl-body { display: flex; flex-direction: column; gap: 0; }
+.done-btn {
+  width:26px; height:26px; border-radius:7px; border:1.5px solid var(--border);
+  background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .2s; font-size:13px; color:transparent; flex-shrink:0;
+}
+.done-btn:hover { border-color:var(--green); background:rgba(34,197,94,.1); }
+.done-btn.on { background:var(--green); border-color:var(--green); color:#fff; }
+.done-cell { display:flex; align-items:center; gap:6px; justify-content:center; }
+.done-label {
+  font-size:9px; font-weight:700; color:var(--green);
+  white-space:nowrap; opacity:0; transform:translateX(-4px);
+  transition:opacity .3s, transform .3s;
+  letter-spacing:0.02em;
+}
+.done-label.show { opacity:1; transform:translateX(0); }
 
-  .tbl-row {
-    display: grid;
-    grid-template-columns: 36px minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr) 60px;
-    gap: 4px;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: none;
-    align-items: center;
-    transition: background 0.15s;
-  }
-  .tbl-row:last-child { border-radius: 0 0 8px 8px; }
-  .tbl-row:hover { background: var(--surface2); }
+/* ── Congratulation overlay ── */
+.congrat-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.8);
+  z-index:9999; align-items:center; justify-content:center; padding:20px;
+}
+.congrat-overlay.show { display:flex; }
+.congrat-box {
+  background:linear-gradient(135deg,#0f2a1a,#1a4a2a); border:2px solid var(--green);
+  border-radius:24px; padding:40px 44px; text-align:center; max-width:400px; width:100%;
+  animation:popIn .4s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+.congrat-emoji { font-size:52px; margin-bottom:16px; }
+.congrat-title { font-size:26px; font-weight:700; color:var(--green); margin-bottom:10px; }
+.congrat-msg { font-size:14px; color:#a0e0b0; line-height:1.6; margin-bottom:6px; }
+.congrat-quote { font-size:12px; color:rgba(160,224,176,.6); font-style:italic; margin-bottom:24px; }
+.congrat-btn {
+  background:var(--green); border:none; border-radius:12px; padding:12px 32px;
+  font-size:14px; font-weight:700; color:#fff; cursor:pointer; font-family:inherit; transition:opacity .2s;
+}
+.congrat-btn:hover { opacity:.88; }
 
-  .tbl-day {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    font-family: 'JetBrains Mono', monospace;
-  }
+/* ── Toast ── */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--green); color:#fff; font-weight:600; font-size:13px;
+  padding:10px 22px; border-radius:30px; transition:transform .3s,opacity .3s;
+  opacity:0; z-index:9998; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-  /* Editable date cell */
-  .tbl-date {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--accent);
-    font-family: 'Space Grotesk', sans-serif;
-    overflow: hidden;
-  }
-  .date-input-wrap { position: relative; }
-  .date-display {
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: background 0.15s;
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--accent);
-    white-space: nowrap;
-  }
-  .date-display:hover { background: rgba(249,115,22,0.12); }
-  .date-edit-input {
-    width: 120px;
-    background: var(--surface2);
-    border: 1px solid var(--accent);
-    border-radius: 6px;
-    padding: 3px 6px;
-    font-size: 11px;
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text);
-    outline: none;
-    display: none;
-  }
-  .date-edit-input.visible { display: block; }
-
-  .tbl-profit {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-    text-align: right;
-    white-space: nowrap;
-  }
-  .tbl-sum {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
-    font-family: 'JetBrains Mono', monospace;
-    text-align: right;
-    white-space: nowrap;
-  }
-  .tbl-balance {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  /* Hint */
-  .edit-hint {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text3);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-  }
-  .edit-hint span {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 6px;
-    font-size: 10px;
-    color: var(--accent);
-  }
-
-  /* Done checkbox */
-  .tbl-done {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .done-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 14px;
-    color: transparent;
-    flex-shrink: 0;
-  }
-  .done-btn:hover {
-    border-color: var(--green);
-    background: rgba(34,197,94,0.08);
-  }
-  .done-btn.checked {
-    background: var(--green);
-    border-color: var(--green);
-    color: white;
-  }
-  .tbl-row.done-row {
-    opacity: 0.55;
-  }
-  .tbl-row.done-row .tbl-balance {
-    text-decoration: line-through;
-    color: var(--text3);
-  }
-
-  /* Scrollable table wrapper */
-  .table-scroll {
-    max-height: 460px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .table-scroll::-webkit-scrollbar { width: 3px; }
-  .table-scroll::-webkit-scrollbar-track { background: transparent; }
-  .table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* Print button */
-  .print-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text2);
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: all 0.2s;
-  }
-  .print-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(249,115,22,0.06);
-  }
-  .print-btn svg { width: 15px; height: 15px; }
-
-  .pdf-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
-    background: rgba(249,115,22,0.1);
-    border: 1px solid rgba(249,115,22,0.4);
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent);
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: all 0.2s;
-  }
-  .pdf-btn:hover {
-    background: rgba(249,115,22,0.2);
-    border-color: var(--accent);
-  }
-  .pdf-btn:active { transform: scale(0.97); }
-  .pdf-btn svg { width: 15px; height: 15px; }
-  .btn-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .save-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
-    background: rgba(34,197,94,0.1);
-    border: 1px solid rgba(34,197,94,0.4);
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--green);
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: all 0.2s;
-  }
-  .save-btn:hover { background: rgba(34,197,94,0.2); }
-  .save-btn:active { transform: scale(0.97); }
-  .save-btn svg { width: 15px; height: 15px; }
-  .save-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--green);
-    color: #fff;
-    font-weight: 600;
-    font-size: 13px;
-    padding: 10px 22px;
-    border-radius: 30px;
-    transition: transform 0.3s ease, opacity 0.3s;
-    opacity: 0;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  .save-toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-  .saved-badge {
-    font-size: 10px;
-    background: rgba(34,197,94,0.15);
-    border: 1px solid rgba(34,197,94,0.3);
-    color: var(--green);
-    border-radius: 6px;
-    padding: 2px 7px;
-    font-weight: 600;
-    display: none;
-  }
-  .saved-badge.show { display: inline-block; }
-  @media (max-width: 480px) {
-    .table-header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .btn-group { width: 100%; }
-    .print-btn, .pdf-btn { flex: 1; justify-content: center; font-size: 12px; padding: 9px 12px; }
-  }
-
-  /* ═══════════════════════════════════════
-     PRINT STYLES — A4
-  ═══════════════════════════════════════ */
-  @media print {
-    @page {
-      size: A4 portrait;
-      margin: 15mm 12mm 15mm 12mm;
-    }
-
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-    body {
-      background: #ffffff !important;
-      color: #000000 !important;
-      font-family: 'Space Grotesk', sans-serif !important;
-      padding: 0 !important;
-    }
-
-    /* Hide everything except print area */
-    .header, .card, .calc-btn, .print-btn, .edit-hint, .result-card { display: none !important; }
-    #tableSection { display: block !important; }
-    .table-scroll { max-height: none !important; overflow: visible !important; }
-
-    /* Print header */
-    .print-header { display: block !important; }
-
-    /* Table styles untuk print */
-    .tbl-head, .tbl-row {
-      background: #ffffff !important;
-      border-color: #cccccc !important;
-      color: #000000 !important;
-      break-inside: avoid;
-    }
-    .tbl-head {
-      background: #f5f5f5 !important;
-      border-radius: 0 !important;
-    }
-    .tbl-head span {
-      color: #444444 !important;
-      font-size: 9pt !important;
-    }
-    .tbl-row {
-      padding: 7px 12px !important;
-      page-break-inside: avoid;
-    }
-    .tbl-day   { color: #666666 !important; font-size: 9pt !important; }
-    .tbl-profit { color: #1a7a3a !important; font-size: 9pt !important; }
-    .tbl-sum   { color: #444444 !important; font-size: 9pt !important; }
-    .tbl-balance { color: #000000 !important; font-size: 9pt !important; }
-    .tbl-date  { font-size: 9pt !important; }
-    .date-display { color: #c65000 !important; font-size: 9pt !important; }
-    .date-edit-input { display: none !important; }
-
-    .table-header-row { margin-bottom: 6px !important; }
-    .tbl-body > div:nth-child(even) { background: #fafafa !important; }
-
-    /* Print summary box */
-    .print-summary { display: block !important; }
-  }
-
-  /* Hide print elements on screen */
-  .print-header { display: none; }
-  .print-summary { display: none; }
+/* ── Print styles ── */
+@media print {
+  @page { size:A4 portrait; margin:15mm 12mm; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  body { background:#fff !important; color:#000 !important; padding:0 !important; }
+  .header,.card,.calc-btn,.btn-group,.edit-hint,.result-card { display:none !important; }
+  #tableSection { display:block !important; }
+  .tbl-scroll { max-height:none !important; overflow:visible !important; }
+  .print-header { display:block !important; }
+  .tbl-head,.tbl-row { background:#fff !important; border-color:#ccc !important; color:#000 !important; break-inside:avoid; }
+  .tbl-head { background:#f5f5f5 !important; }
+  .tbl-row.done-row { background:#f0fff4 !important; }
+}
+.print-header { display:none; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
-  <div class="header-badge">⚡ Compound Calculator</div>
+  <div class="badge">⚡ Compound Calculator</div>
   <h1>Compound Gain</h1>
-  <p>Hitung pertumbuhan majemuk harian</p>
-  <div class="saved-badge" id="savedBadge" style="margin-top:8px;"></div>
+  <p class="tagline">"It's a marathon, not a sprint"</p>
+  <div class="saved-badge show" id="savedBadge">Data terakhir: 30/4/2026, 09.00.33</div>
 </div>
 
 <!-- Input Card -->
@@ -630,124 +269,92 @@
   <div class="card-title">Parameter</div>
   <div class="input-grid">
     <div class="field">
-      <label>Principal ($)</label>
-      <input type="number" id="principal" value="1000" min="0" step="100">
+      <label>Principal</label>
+      <input type="number" id="inp-principal" value="1000" min="0" inputmode="decimal">
     </div>
     <div class="field">
-      <label>Profit Rate (%)</label>
-      <input type="number" id="profitRate" value="1" min="0.01" max="100" step="0.1">
+      <label>Rate (%/hari)</label>
+      <input type="number" id="inp-rate" value="1" min="0.01" step="0.1" inputmode="decimal">
     </div>
     <div class="field">
       <label>Jumlah Hari</label>
-      <input type="number" id="days" value="20" min="1" max="365">
+      <input type="number" id="inp-days" value="20" min="1" max="365" inputmode="numeric">
     </div>
     <div class="field">
       <label>Tanggal Mulai</label>
-      <input type="date" id="startDate">
+      <input type="date" id="inp-date">
     </div>
   </div>
 
   <div class="toggle-row">
-    <span class="toggle-label">Mata Uang</span>
-    <div class="toggle-switch">
-      <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD $</button>
-      <button class="toggle-btn" id="btnIDR" onclick="setCurrency('IDR')">IDR Rp</button>
+    <span>Mata Uang</span>
+    <div class="tog">
+      <button class="" id="btn-usd" onclick="setCurrency(&#39;USD&#39;)">USD $</button>
+      <button id="btn-idr" onclick="setCurrency(&#39;IDR&#39;)" class="on">IDR Rp</button>
     </div>
   </div>
-
   <div class="toggle-row">
-    <span class="toggle-label">Termasuk Weekend?</span>
-    <div class="toggle-switch">
-      <button class="toggle-btn active" id="btnYes" onclick="setWeekend(true)">Ya</button>
-      <button class="toggle-btn" id="btnNo" onclick="setWeekend(false)">Tidak</button>
+    <span>Include Weekend?</span>
+    <div class="tog">
+      <button class="on" id="btn-yes" onclick="setWeekend(true)">Ya</button>
+      <button id="btn-no" onclick="setWeekend(false)">Tidak</button>
     </div>
   </div>
 
-  <button class="calc-btn" onclick="calculate()">Hitung ⟶</button>
+  <button class="calc-btn" onclick="calculate()">Hitung →</button>
 </div>
 
-<!-- Result Card -->
-<div class="result-card" id="resultCard" style="display:none">
-  <div class="result-left">
-    <div class="result-label">Total Balance</div>
-    <div class="result-value" id="totalBalance">$0.00</div>
-    <div class="result-pct" id="totalPct">+0.00%</div>
+<!-- Result -->
+<div class="result-card show" id="result-card">
+  <div class="result-main">
+    <div class="lbl">Total Balance</div>
+    <div class="val" id="r-balance">Rp 12.201.900.399</div>
+    <div class="gain" id="r-gain">+22.02%</div>
   </div>
-  <div class="result-stats">
-    <div class="stat-item">
-      <div class="stat-label">Total Profit</div>
-      <div class="stat-value" id="totalProfit">$0.00</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Avg / Hari</div>
-      <div class="stat-value" id="avgDaily">$0.00</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Hari Trading</div>
-      <div class="stat-value" id="tradingDays">0</div>
-    </div>
+  <div class="result-side">
+    <div class="mini"><div class="l">Total Profit</div><div class="v" id="r-profit">Rp 2.201.900.399</div></div>
+    <div class="mini"><div class="l">Avg/Hari</div><div class="v" id="r-avg">Rp 110.095.020</div></div>
+    <div class="mini"><div class="l">Hari</div><div class="v" id="r-days">20</div></div>
   </div>
 </div>
 
 <!-- Table -->
-<div id="tableSection" style="display:none">
+<div id="tableSection" style="display: block;">
 
-  <!-- Print header — only visible when printing -->
+  <!-- Print header -->
   <div class="print-header" id="printHeader">
-    <div style="border-bottom:2px solid #e0e0e0;padding-bottom:12px;margin-bottom:16px;">
-      <div style="font-size:18pt;font-weight:700;color:#000;margin-bottom:4px;">Compound Gain Report</div>
-      <div style="font-size:9pt;color:#666;" id="printSubtitle">—</div>
+    <div style="border-bottom:2px solid #e0e0e0;padding-bottom:10px;margin-bottom:14px;">
+      <div style="font-size:16pt;font-weight:700;">Compound Gain Report</div>
+      <div style="font-size:9pt;color:#888;font-style:italic;">"It's a marathon, not a sprint"</div>
+      <div style="font-size:8pt;color:#999;margin-top:2px;" id="print-subtitle">Rate: 1%/hari | 20 hari | Termasuk Weekend</div>
     </div>
-    <div class="print-summary" id="printSummary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;border:1px solid #e0e0e0;border-radius:6px;padding:12px;">
-      <div style="border-right:1px solid #e0e0e0;padding-right:10px;">
-        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Principal</div>
-        <div style="font-size:13pt;font-weight:700;color:#000;" id="ps-principal">—</div>
-      </div>
-      <div style="border-right:1px solid #e0e0e0;padding:0 10px;">
-        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Balance</div>
-        <div style="font-size:13pt;font-weight:700;color:#000;" id="ps-balance">—</div>
-      </div>
-      <div style="border-right:1px solid #e0e0e0;padding:0 10px;">
-        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Profit</div>
-        <div style="font-size:13pt;font-weight:700;color:#1a7a3a;" id="ps-profit">—</div>
-      </div>
-      <div style="padding-left:10px;">
-        <div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Total Gain</div>
-        <div style="font-size:13pt;font-weight:700;color:#c65000;" id="ps-pct">—</div>
-      </div>
+    <div id="print-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;border:1px solid #e0e0e0;border-radius:6px;padding:10px;"><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Principal</div><div style="font-size:11pt;font-weight:700;color:#000;">Rp 10.000.000.000</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Balance</div><div style="font-size:11pt;font-weight:700;color:#000;">Rp 12.201.900.399</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Profit</div><div style="font-size:11pt;font-weight:700;color:#166534;">Rp 2.201.900.399</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Gain</div><div style="font-size:11pt;font-weight:700;color:#c2410c;">+22.02%</div></div></div>
+  </div>
+
+  <div class="tbl-header">
+    <div class="tbl-title">Rincian Harian</div>
+    <div class="tbl-meta">
+      <div class="tbl-count" id="tbl-count">20 hari</div>
+      <div class="done-count" id="done-count" style="color: var(--text3);">0 / 20 done</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-save" onclick="saveData()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 5L11 3H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5z"></path><path d="M10 13V9H6v4"></path><path d="M6 3v3h5"></path></svg>
+        Simpan
+      </button>
+      <button class="btn btn-print" onclick="window.print()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"></rect><path d="M5 7V3h6v4"></path><path d="M5 11h6"></path></svg>
+        Print A4
+      </button>
+      <button class="btn btn-pdf" onclick="exportPDF()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z"></path><path d="M9 2v4h4"></path></svg>
+        Export PDF
+      </button>
     </div>
   </div>
 
-  <div class="table-header-row">
-    <div class="table-title">Rincian Harian</div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <div class="rows-count" id="rowsCount">0 hari</div>
-      <div class="rows-count" id="doneCounter" style="color:var(--text3);">0 / 0 done</div>
-      <div class="btn-group">
-        <button class="print-btn" onclick="doPrint()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="3" y="7" width="10" height="7" rx="1"/>
-            <path d="M5 7V3h6v4"/>
-            <path d="M5 11h6"/>
-            <path d="M5 13h3"/>
-            <rect x="11" y="8.5" width="1.5" height="1.5" rx="0.5" fill="currentColor" stroke="none"/>
-          </svg>
-          Print A4
-        </button>
-        <button class="pdf-btn" onclick="exportPDF()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z"/>
-            <path d="M9 2v4h4"/>
-            <path d="M5.5 10h5M5.5 8h3"/>
-          </svg>
-          Export PDF
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="edit-hint">
-    Tap tanggal <span>orange</span> untuk edit
-  </div>
+  <div class="edit-hint">Tap tanggal <b>orange</b> untuk edit</div>
+
   <div class="tbl-outer">
     <div class="tbl-inner">
       <div class="tbl-head">
@@ -756,474 +363,381 @@
         <span style="text-align:right">Profit</span>
         <span style="text-align:right">Σ Profit</span>
         <span style="text-align:right">Balance</span>
-        <span style="text-align:center">Done</span>
+        <span>Done</span>
       </div>
-      <div class="table-scroll">
-        <div class="tbl-body" id="tableBody"></div>
+      <div class="tbl-scroll">
+        <div class="tbl-body" id="tbl-body"><div class="tbl-row"><div class="r-day">1</div><div><span class="r-date" id="ds-0" onclick="openEdit(0)">30 Apr 2026 Kam</span><input class="r-date-input" id="di-0" type="date" value="2026-04-29" onchange="editDate(0,this.value)" onblur="closeEdit(0)"></div><div class="r-profit">Rp 100.000.000</div><div class="r-sum">Rp 100.000.000</div><div class="r-bal">Rp 10.100.000.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(0)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">2</div><div><span class="r-date" id="ds-1" onclick="openEdit(1)">01 Mei 2026 Jum</span><input class="r-date-input" id="di-1" type="date" value="2026-04-30" onchange="editDate(1,this.value)" onblur="closeEdit(1)"></div><div class="r-profit">Rp 101.000.000</div><div class="r-sum">Rp 201.000.000</div><div class="r-bal">Rp 10.201.000.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(1)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">3</div><div><span class="r-date" id="ds-2" onclick="openEdit(2)">02 Mei 2026 Sab</span><input class="r-date-input" id="di-2" type="date" value="2026-05-01" onchange="editDate(2,this.value)" onblur="closeEdit(2)"></div><div class="r-profit">Rp 102.010.000</div><div class="r-sum">Rp 303.010.000</div><div class="r-bal">Rp 10.303.010.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(2)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">4</div><div><span class="r-date" id="ds-3" onclick="openEdit(3)">03 Mei 2026 Min</span><input class="r-date-input" id="di-3" type="date" value="2026-05-02" onchange="editDate(3,this.value)" onblur="closeEdit(3)"></div><div class="r-profit">Rp 103.030.100</div><div class="r-sum">Rp 406.040.100</div><div class="r-bal">Rp 10.406.040.100</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(3)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">5</div><div><span class="r-date" id="ds-4" onclick="openEdit(4)">04 Mei 2026 Sen</span><input class="r-date-input" id="di-4" type="date" value="2026-05-03" onchange="editDate(4,this.value)" onblur="closeEdit(4)"></div><div class="r-profit">Rp 104.060.401</div><div class="r-sum">Rp 510.100.501</div><div class="r-bal">Rp 10.510.100.501</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(4)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">6</div><div><span class="r-date" id="ds-5" onclick="openEdit(5)">05 Mei 2026 Sel</span><input class="r-date-input" id="di-5" type="date" value="2026-05-04" onchange="editDate(5,this.value)" onblur="closeEdit(5)"></div><div class="r-profit">Rp 105.101.005</div><div class="r-sum">Rp 615.201.506</div><div class="r-bal">Rp 10.615.201.506</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(5)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">7</div><div><span class="r-date" id="ds-6" onclick="openEdit(6)">06 Mei 2026 Rab</span><input class="r-date-input" id="di-6" type="date" value="2026-05-05" onchange="editDate(6,this.value)" onblur="closeEdit(6)"></div><div class="r-profit">Rp 106.152.015</div><div class="r-sum">Rp 721.353.521</div><div class="r-bal">Rp 10.721.353.521</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(6)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">8</div><div><span class="r-date" id="ds-7" onclick="openEdit(7)">07 Mei 2026 Kam</span><input class="r-date-input" id="di-7" type="date" value="2026-05-06" onchange="editDate(7,this.value)" onblur="closeEdit(7)"></div><div class="r-profit">Rp 107.213.535</div><div class="r-sum">Rp 828.567.056</div><div class="r-bal">Rp 10.828.567.056</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(7)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">9</div><div><span class="r-date" id="ds-8" onclick="openEdit(8)">08 Mei 2026 Jum</span><input class="r-date-input" id="di-8" type="date" value="2026-05-07" onchange="editDate(8,this.value)" onblur="closeEdit(8)"></div><div class="r-profit">Rp 108.285.671</div><div class="r-sum">Rp 936.852.727</div><div class="r-bal">Rp 10.936.852.727</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(8)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">10</div><div><span class="r-date" id="ds-9" onclick="openEdit(9)">09 Mei 2026 Sab</span><input class="r-date-input" id="di-9" type="date" value="2026-05-08" onchange="editDate(9,this.value)" onblur="closeEdit(9)"></div><div class="r-profit">Rp 109.368.527</div><div class="r-sum">Rp 1.046.221.254</div><div class="r-bal">Rp 11.046.221.254</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(9)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">11</div><div><span class="r-date" id="ds-10" onclick="openEdit(10)">10 Mei 2026 Min</span><input class="r-date-input" id="di-10" type="date" value="2026-05-09" onchange="editDate(10,this.value)" onblur="closeEdit(10)"></div><div class="r-profit">Rp 110.462.213</div><div class="r-sum">Rp 1.156.683.467</div><div class="r-bal">Rp 11.156.683.467</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(10)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">12</div><div><span class="r-date" id="ds-11" onclick="openEdit(11)">11 Mei 2026 Sen</span><input class="r-date-input" id="di-11" type="date" value="2026-05-10" onchange="editDate(11,this.value)" onblur="closeEdit(11)"></div><div class="r-profit">Rp 111.566.835</div><div class="r-sum">Rp 1.268.250.301</div><div class="r-bal">Rp 11.268.250.301</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(11)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">13</div><div><span class="r-date" id="ds-12" onclick="openEdit(12)">12 Mei 2026 Sel</span><input class="r-date-input" id="di-12" type="date" value="2026-05-11" onchange="editDate(12,this.value)" onblur="closeEdit(12)"></div><div class="r-profit">Rp 112.682.503</div><div class="r-sum">Rp 1.380.932.804</div><div class="r-bal">Rp 11.380.932.804</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(12)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">14</div><div><span class="r-date" id="ds-13" onclick="openEdit(13)">13 Mei 2026 Rab</span><input class="r-date-input" id="di-13" type="date" value="2026-05-12" onchange="editDate(13,this.value)" onblur="closeEdit(13)"></div><div class="r-profit">Rp 113.809.328</div><div class="r-sum">Rp 1.494.742.132</div><div class="r-bal">Rp 11.494.742.132</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(13)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">15</div><div><span class="r-date" id="ds-14" onclick="openEdit(14)">14 Mei 2026 Kam</span><input class="r-date-input" id="di-14" type="date" value="2026-05-13" onchange="editDate(14,this.value)" onblur="closeEdit(14)"></div><div class="r-profit">Rp 114.947.421</div><div class="r-sum">Rp 1.609.689.554</div><div class="r-bal">Rp 11.609.689.554</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(14)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">16</div><div><span class="r-date" id="ds-15" onclick="openEdit(15)">15 Mei 2026 Jum</span><input class="r-date-input" id="di-15" type="date" value="2026-05-14" onchange="editDate(15,this.value)" onblur="closeEdit(15)"></div><div class="r-profit">Rp 116.096.896</div><div class="r-sum">Rp 1.725.786.449</div><div class="r-bal">Rp 11.725.786.449</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(15)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">17</div><div><span class="r-date" id="ds-16" onclick="openEdit(16)">16 Mei 2026 Sab</span><input class="r-date-input" id="di-16" type="date" value="2026-05-15" onchange="editDate(16,this.value)" onblur="closeEdit(16)"></div><div class="r-profit">Rp 117.257.864</div><div class="r-sum">Rp 1.843.044.314</div><div class="r-bal">Rp 11.843.044.314</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(16)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">18</div><div><span class="r-date" id="ds-17" onclick="openEdit(17)">17 Mei 2026 Min</span><input class="r-date-input" id="di-17" type="date" value="2026-05-16" onchange="editDate(17,this.value)" onblur="closeEdit(17)"></div><div class="r-profit">Rp 118.430.443</div><div class="r-sum">Rp 1.961.474.757</div><div class="r-bal">Rp 11.961.474.757</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(17)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">19</div><div><span class="r-date" id="ds-18" onclick="openEdit(18)">18 Mei 2026 Sen</span><input class="r-date-input" id="di-18" type="date" value="2026-05-17" onchange="editDate(18,this.value)" onblur="closeEdit(18)"></div><div class="r-profit">Rp 119.614.748</div><div class="r-sum">Rp 2.081.089.504</div><div class="r-bal">Rp 12.081.089.504</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(18)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">20</div><div><span class="r-date" id="ds-19" onclick="openEdit(19)">19 Mei 2026 Sel</span><input class="r-date-input" id="di-19" type="date" value="2026-05-18" onchange="editDate(19,this.value)" onblur="closeEdit(19)"></div><div class="r-profit">Rp 120.810.895</div><div class="r-sum">Rp 2.201.900.399</div><div class="r-bal">Rp 12.201.900.399</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(19)"></button><span class="done-label ">🎉</span></div></div></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Congratulation -->
+<div class="congrat-overlay" id="congrat-overlay">
+  <div class="congrat-box">
+    <div class="congrat-emoji">🏆</div>
+    <div class="congrat-title">Congratulation!</div>
+    <div class="congrat-msg">Semua target hari telah kamu capai!<br>Kerja keras dan konsistensimu terbayar.</div>
+    <div class="congrat-quote">"It's a marathon, not a sprint"</div>
+    <button class="congrat-btn" onclick="document.getElementById(&#39;congrat-overlay&#39;).classList.remove(&#39;show&#39;)">Terima Kasih 🙌</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Data tersimpan!</div>
+
 <script>
-  let includeWeekends = true;
-  let tableData = [];
-  let doneState = {};
-  let currency = 'USD';
+// ── State ──────────────────────────────────────────────────────
+var rows     = [];
+var doneState= {};
+var currency = 'USD';
+var inclWknd = true;
 
-  function setCurrency(c) {
-    currency = c;
-    document.getElementById('btnUSD').classList.toggle('active', c === 'USD');
-    document.getElementById('btnIDR').classList.toggle('active', c === 'IDR');
-    // Update principal placeholder
-    const inp = document.getElementById('principal');
-    if (c === 'IDR') {
-      inp.placeholder = 'e.g. 15000000';
-      if (parseFloat(inp.value) < 1000) inp.value = '10000000';
-    } else {
-      inp.placeholder = 'e.g. 1000';
-      if (parseFloat(inp.value) >= 100000) inp.value = '1000';
+// ── Init ───────────────────────────────────────────────────────
+var today = new Date();
+document.getElementById('inp-date').value = today.toISOString().split('T')[0];
+
+// ── Helpers ────────────────────────────────────────────────────
+var DAYS   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+var MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+
+function fmtDate(d) {
+  return d.getDate().toString().padStart(2,'0') + ' ' +
+    MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ' ' + DAYS[d.getDay()];
+}
+
+function fmtMoney(v, forceIDR) {
+  var useCurrency = forceIDR ? 'IDR' : currency;
+  if (useCurrency === 'IDR') {
+    return 'Rp ' + Math.round(v).toLocaleString('id-ID');
+  }
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function getStartDate() {
+  var val = document.getElementById('inp-date').value;
+  if (!val) return new Date();
+  var parts = val.split('-').map(Number);
+  return new Date(parts[0], parts[1]-1, parts[2]);
+}
+
+// ── Toggles ────────────────────────────────────────────────────
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('btn-usd').classList.toggle('on', c==='USD');
+  document.getElementById('btn-idr').classList.toggle('on', c==='IDR');
+  var inp = document.getElementById('inp-principal');
+  if (c==='IDR' && parseFloat(inp.value) < 10000) inp.value = '10000000';
+  if (c==='USD' && parseFloat(inp.value) >= 100000) inp.value = '1000';
+}
+
+function setWeekend(v) {
+  inclWknd = v;
+  document.getElementById('btn-yes').classList.toggle('on', v);
+  document.getElementById('btn-no').classList.toggle('on', !v);
+}
+
+// ── Calculate ──────────────────────────────────────────────────
+function calculate() {
+  var principal = parseFloat(document.getElementById('inp-principal').value) || 1000;
+  var rate      = parseFloat(document.getElementById('inp-rate').value) || 1;
+  var numDays   = parseInt(document.getElementById('inp-days').value) || 20;
+  var start     = getStartDate();
+
+  rows      = [];
+  doneState = {};
+
+  var bal = principal, cum = 0, cur = new Date(start), cnt = 0;
+  while (cnt < numDays) {
+    if (!inclWknd && (cur.getDay()===0 || cur.getDay()===6)) {
+      cur.setDate(cur.getDate()+1); continue;
+    }
+    cnt++;
+    var dp = bal * (rate/100);
+    cum += dp; bal += dp;
+    rows.push({ day:cnt, date:new Date(cur), dateStr:fmtDate(cur), profit:dp, cum:cum, bal:bal });
+    cur.setDate(cur.getDate()+1);
+  }
+
+  var totalProfit = bal - principal;
+  var pct = (totalProfit/principal*100).toFixed(2);
+  var avg = totalProfit/numDays;
+
+  document.getElementById('r-balance').textContent = fmtMoney(bal);
+  document.getElementById('r-gain').textContent    = '+' + pct + '%';
+  document.getElementById('r-profit').textContent  = fmtMoney(totalProfit);
+  document.getElementById('r-avg').textContent     = fmtMoney(avg);
+  document.getElementById('r-days').textContent    = numDays;
+  document.getElementById('tbl-count').textContent = numDays + ' hari';
+  document.getElementById('result-card').classList.add('show');
+  document.getElementById('tableSection').style.display = 'block';
+
+  // Print summary
+  var sub = document.getElementById('print-subtitle');
+  if (sub) sub.textContent = 'Rate: '+rate+'%/hari | '+numDays+' hari | '+(inclWknd?'Termasuk Weekend':'Tanpa Weekend');
+  var ps = document.getElementById('print-summary');
+  if (ps) ps.innerHTML = [
+    {l:'Principal',v:fmtMoney(principal),c:'#000'},
+    {l:'Total Balance',v:fmtMoney(bal),c:'#000'},
+    {l:'Total Profit',v:fmtMoney(totalProfit),c:'#166534'},
+    {l:'Total Gain',v:'+'+pct+'%',c:'#c2410c'}
+  ].map(function(s) {
+    return '<div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">'+s.l+'</div><div style="font-size:11pt;font-weight:700;color:'+s.c+';">'+s.v+'</div></div>';
+  }).join('');
+
+  renderTable();
+}
+
+// ── Render table ───────────────────────────────────────────────
+function renderTable() {
+  var body = document.getElementById('tbl-body');
+  body.innerHTML = '';
+  var done = 0;
+  rows.forEach(function(row, i) {
+    if (doneState[i]) done++;
+    var div = document.createElement('div');
+    div.className = 'tbl-row' + (doneState[i] ? ' done-row' : '');
+    div.innerHTML =
+      '<div class="r-day">' + row.day + '</div>' +
+      '<div><span class="r-date" id="ds-'+i+'" onclick="openEdit('+i+')">' + row.dateStr + '</span>' +
+      '<input class="r-date-input" id="di-'+i+'" type="date" value="' + row.date.toISOString().split('T')[0] + '" onchange="editDate('+i+',this.value)" onblur="closeEdit('+i+')"></div>' +
+      '<div class="r-profit">' + fmtMoney(row.profit) + '</div>' +
+      '<div class="r-sum">' + fmtMoney(row.cum) + '</div>' +
+      '<div class="r-bal">' + fmtMoney(row.bal) + '</div>' +
+      '<div class="done-cell r-done"><button class="done-btn ' + (doneState[i]?'on':'') + '" onclick="toggleDone('+i+')">' + (doneState[i]?'✓':'') + '</button>' +
+      '<span class="done-label ' + (doneState[i]?'show':'') + '">🎉</span></div>';
+    body.appendChild(div);
+  });
+
+  // Update done counter
+  var dc = document.getElementById('done-count');
+  if (dc) {
+    dc.textContent = done + ' / ' + rows.length + ' done';
+    dc.style.color = (done===rows.length && rows.length>0) ? 'var(--green)' : 'var(--text3)';
+  }
+}
+
+// ── Date edit ──────────────────────────────────────────────────
+function openEdit(i) {
+  document.getElementById('ds-'+i).style.display = 'none';
+  var inp = document.getElementById('di-'+i);
+  inp.classList.add('show'); inp.focus();
+}
+function closeEdit(i) {
+  document.getElementById('ds-'+i).style.display = 'inline-block';
+  document.getElementById('di-'+i).classList.remove('show');
+}
+function editDate(i, val) {
+  if (!val) return;
+  var p = val.split('-').map(Number);
+  var d = new Date(p[0], p[1]-1, p[2]);
+  rows[i].date = d; rows[i].dateStr = fmtDate(d);
+  closeEdit(i); renderTable();
+}
+
+// ── Done ───────────────────────────────────────────────────────
+function toggleDone(i) {
+  doneState[i] = !doneState[i];
+  renderTable();
+  autoSaveDone();
+  // Check if all done
+  if (rows.length > 0) {
+    var doneCnt = 0;
+    for (var k = 0; k < rows.length; k++) { if (doneState[k]) doneCnt++; }
+    if (doneCnt === rows.length) {
+      setTimeout(function() {
+        document.getElementById('congrat-overlay').classList.add('show');
+      }, 300);
     }
   }
+}
 
-  // Set today as default start date
-  const today = new Date();
-  document.getElementById('startDate').value = today.toISOString().split('T')[0];
-
-  function setWeekend(val) {
-    includeWeekends = val;
-    document.getElementById('btnYes').classList.toggle('active', val);
-    document.getElementById('btnNo').classList.toggle('active', !val);
-  }
-
-  const DAYS_ID = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-  const MONTHS_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-
-  function formatDate(d) {
-    const day = d.getDate().toString().padStart(2,'0');
-    const month = MONTHS_ID[d.getMonth()];
-    const year = d.getFullYear();
-    const dow = DAYS_ID[d.getDay()];
-    return `${day} ${month} ${year} ${dow}`;
-  }
-
-  function formatDateShort(d) {
-    const day = d.getDate().toString().padStart(2,'0');
-    const month = MONTHS_ID[d.getMonth()];
-    const year = d.getFullYear();
-    const dow = DAYS_ID[d.getDay()];
-    return `${day} ${month} ${year} ${dow}`;
-  }
-
-  function fmtMoney(v, dec) {
-    if (currency === 'IDR') {
-      const d = dec !== undefined ? dec : 0;
-      return 'Rp ' + Math.round(v).toLocaleString('id-ID', {minimumFractionDigits:d, maximumFractionDigits:d});
-    }
-    const d = dec !== undefined ? dec : 2;
-    return '$' + v.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
-  }
-
-  function isWeekend(d) {
-    return d.getDay() === 0 || d.getDay() === 6;
-  }
-
-  function getInputDate() {
-    const val = document.getElementById('startDate').value;
-    if (!val) return new Date();
-    const [y,m,d] = val.split('-').map(Number);
-    return new Date(y, m-1, d);
-  }
-
-  function calculate() {
-    const principal  = parseFloat(document.getElementById('principal').value) || 1000;
-    const rate       = parseFloat(document.getElementById('profitRate').value) || 1;
-    const numDays    = parseInt(document.getElementById('days').value) || 20;
-    const startDate  = getInputDate();
-
-    tableData = [];
-    doneState = {};
-    let balance    = principal;
-    let cumProfit  = 0;
-    let currentDate = new Date(startDate);
-    let dayCount   = 0;
-
-    while (dayCount < numDays) {
-      if (!includeWeekends && isWeekend(currentDate)) {
-        currentDate.setDate(currentDate.getDate() + 1);
-        continue;
-      }
-      dayCount++;
-      const dailyProfit = balance * (rate / 100);
-      cumProfit  += dailyProfit;
-      balance    += dailyProfit;
-
-      tableData.push({
-        day      : dayCount,
-        date     : new Date(currentDate),
-        dateStr  : formatDateShort(currentDate),
-        profit   : dailyProfit,
-        cumProfit: cumProfit,
-        balance  : balance
-      });
-
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Update result card
-    const totalProfit = balance - principal;
-    const pct = (totalProfit / principal * 100).toFixed(2);
-    const avgDaily = totalProfit / numDays;
-
-    document.getElementById('totalBalance').textContent = fmtMoney(balance);
-    document.getElementById('totalPct').textContent = '+' + pct + '%';
-    document.getElementById('totalProfit').textContent = fmtMoney(totalProfit);
-    document.getElementById('avgDaily').textContent = fmtMoney(avgDaily);
-    document.getElementById('tradingDays').textContent = numDays;
-    document.getElementById('rowsCount').textContent = numDays + ' hari';
-
-    document.getElementById('resultCard').style.display = 'flex';
-    document.getElementById('tableSection').style.display = 'block';
-
-    renderTable();
-
-    // Update print summary
-    const pctNum = (totalProfit / principal * 100).toFixed(2);
-    document.getElementById('ps-principal').textContent  = fmtMoney(principal);
-    document.getElementById('ps-balance').textContent   = fmtMoney(balance);
-    document.getElementById('ps-profit').textContent    = fmtMoney(totalProfit);
-    document.getElementById('ps-pct').textContent       = '+' + pctNum + '%';
-
-    const startD = getInputDate();
-    const endD   = tableData[tableData.length - 1]?.date || startD;
-    const wkndTxt = includeWeekends ? 'Termasuk weekend' : 'Tanpa weekend';
-    document.getElementById('printSubtitle').textContent =
-      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' +
-      wkndTxt + '  |  ' +
-      startD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) +
-      ' — ' +
-      endD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'});
-  }
-
-  function doPrint() {
-    window.print();
-  }
-
-  function renderTable() {
-    const body = document.getElementById('tableBody');
-    body.innerHTML = '';
-
-    tableData.forEach((row, idx) => {
-      const isDone = !!doneState[idx];
-      const div = document.createElement('div');
-      div.className = 'tbl-row' + (isDone ? ' done-row' : '');
-      div.innerHTML = `
-        <div class="tbl-day">${row.day}</div>
-        <div class="tbl-date">
-          <div class="date-input-wrap">
-            <span class="date-display" onclick="toggleDateEdit(${idx})" id="disp-${idx}">${row.dateStr}</span>
-            <input class="date-edit-input" type="date" id="dinp-${idx}"
-              value="${row.date.toISOString().split('T')[0]}"
-              onchange="updateDate(${idx}, this.value)"
-              onblur="closeDateEdit(${idx})">
-          </div>
-        </div>
-        <div class="tbl-profit">${fmtMoney(row.profit)}</div>
-        <div class="tbl-sum">${fmtMoney(row.cumProfit)}</div>
-        <div class="tbl-balance">${fmtMoney(row.balance)}</div>
-        <div class="tbl-done">
-          <button class="done-btn ${isDone ? 'checked' : ''}"
-            onclick="toggleDone(${idx})"
-            title="${isDone ? 'Tandai belum selesai' : 'Tandai selesai'}">
-            ${isDone ? '✓' : ''}
-          </button>
-        </div>
-      `;
-      body.appendChild(div);
-    });
-
-    // Update done counter
-    updateDoneCounter();
-  }
-
-  function toggleDateEdit(idx) {
-    const disp = document.getElementById('disp-' + idx);
-    const inp  = document.getElementById('dinp-' + idx);
-    disp.style.display = 'none';
-    inp.classList.add('visible');
-    inp.focus();
-  }
-
-  function closeDateEdit(idx) {
-    const disp = document.getElementById('disp-' + idx);
-    const inp  = document.getElementById('dinp-' + idx);
-    disp.style.display = 'inline-block';
-    inp.classList.remove('visible');
-  }
-
-  function updateDate(idx, newVal) {
-    if (!newVal) return;
-    const [y,m,d] = newVal.split('-').map(Number);
-    const newDate = new Date(y, m-1, d);
-    tableData[idx].date    = newDate;
-    tableData[idx].dateStr = formatDateShort(newDate);
-    closeDateEdit(idx);
-    renderTable();
-
-    // Update print summary
-    const pctNum = (totalProfit / principal * 100).toFixed(2);
-    document.getElementById('ps-principal').textContent  = fmtMoney(principal);
-    document.getElementById('ps-balance').textContent   = fmtMoney(balance);
-    document.getElementById('ps-profit').textContent    = fmtMoney(totalProfit);
-    document.getElementById('ps-pct').textContent       = '+' + pctNum + '%';
-
-    const startD = getInputDate();
-    const endD   = tableData[tableData.length - 1]?.date || startD;
-    const wkndTxt = includeWeekends ? 'Termasuk weekend' : 'Tanpa weekend';
-    document.getElementById('printSubtitle').textContent =
-      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' +
-      wkndTxt + '  |  ' +
-      startD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) +
-      ' — ' +
-      endD.toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'});
-  }
-
-  function doPrint() {
-    window.print();
-  }
-
-  function toggleDone(idx) {
-    doneState[idx] = !doneState[idx];
-    renderTable();
-    // Auto-save doneState ke localStorage
-    const raw = localStorage.getItem('compoundData');
-    if (raw) {
-      try {
-        const data = JSON.parse(raw);
-        data.doneState = doneState;
-        localStorage.setItem('compoundData', JSON.stringify(data));
-      } catch(e) {}
-    }
-  }
-
-  function updateDoneCounter() {
-    const total = tableData.length;
-    const done  = Object.values(doneState).filter(Boolean).length;
-    const el    = document.getElementById('doneCounter');
-    if (el) {
-      el.textContent = done + ' / ' + total + ' done';
-      el.style.color = done === total && total > 0 ? 'var(--green)' : 'var(--text3)';
-    }
-  }
-
-  // ═══ SAVE / LOAD DATA ════════════════════════════════════
-  function saveData() {
-    const data = {
-      principal  : document.getElementById('principal').value,
-      profitRate : document.getElementById('profitRate').value,
-      days       : document.getElementById('days').value,
-      startDate  : document.getElementById('startDate').value,
-      currency   : currency,
-      weekends   : includeWeekends,
-      doneState  : doneState,
-      savedAt    : new Date().toLocaleString('id-ID')
-    };
+function autoSaveDone() {
+  var raw = localStorage.getItem('compoundData');
+  if (!raw) return;
+  try {
+    var data = JSON.parse(raw);
+    data.doneState = doneState;
     localStorage.setItem('compoundData', JSON.stringify(data));
+  } catch(e) {}
+}
 
-    // Show toast
-    const toast = document.getElementById('saveToast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+// ── Save / Load ────────────────────────────────────────────────
+function saveData() {
+  var data = {
+    principal : document.getElementById('inp-principal').value,
+    rate      : document.getElementById('inp-rate').value,
+    days      : document.getElementById('inp-days').value,
+    startDate : document.getElementById('inp-date').value,
+    currency  : currency,
+    weekends  : inclWknd,
+    doneState : doneState,
+    savedAt   : new Date().toLocaleString('id-ID')
+  };
+  localStorage.setItem('compoundData', JSON.stringify(data));
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+  var b = document.getElementById('savedBadge');
+  if (b) { b.textContent = 'Tersimpan ' + data.savedAt; b.classList.add('show'); }
+}
 
-    // Show saved badge in header
-    const badge = document.getElementById('savedBadge');
-    if (badge) {
-      badge.textContent = 'Tersimpan ' + data.savedAt;
-      badge.classList.add('show');
-    }
-  }
+function loadData() {
+  var raw = localStorage.getItem('compoundData');
+  if (!raw) return false;
+  try {
+    var data = JSON.parse(raw);
+    if (data.principal) document.getElementById('inp-principal').value = data.principal;
+    if (data.rate)      document.getElementById('inp-rate').value      = data.rate;
+    if (data.days)      document.getElementById('inp-days').value      = data.days;
+    if (data.startDate) document.getElementById('inp-date').value      = data.startDate;
+    if (data.currency)  setCurrency(data.currency);
+    if (data.weekends !== undefined) setWeekend(data.weekends);
+    if (data.doneState) doneState = data.doneState;
+    var b = document.getElementById('savedBadge');
+    if (b && data.savedAt) { b.textContent = 'Data terakhir: ' + data.savedAt; b.classList.add('show'); }
+    return true;
+  } catch(e) { return false; }
+}
 
-  function loadData() {
-    const raw = localStorage.getItem('compoundData');
-    if (!raw) return false;
-    try {
-      const data = JSON.parse(raw);
-      if (data.principal)  document.getElementById('principal').value  = data.principal;
-      if (data.profitRate) document.getElementById('profitRate').value = data.profitRate;
-      if (data.days)       document.getElementById('days').value       = data.days;
-      if (data.startDate)  document.getElementById('startDate').value  = data.startDate;
-      if (data.currency)   setCurrency(data.currency);
-      if (data.weekends !== undefined) setWeekend(data.weekends);
-      if (data.doneState)  doneState = data.doneState;
+// ── Export PDF ─────────────────────────────────────────────────
+function exportPDF() {
+  if (!rows || rows.length === 0) { alert('Klik Hitung dulu!'); return; }
+  if (typeof window.jspdf === 'undefined') { alert('Library belum siap, coba lagi.'); return; }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc   = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  var principal = parseFloat(document.getElementById('inp-principal').value) || 1000;
+  var rate      = parseFloat(document.getElementById('inp-rate').value) || 1;
+  var numDays   = parseInt(document.getElementById('inp-days').value) || 20;
+  var wknd      = inclWknd ? 'Termasuk Weekend' : 'Tanpa Weekend';
+  var last      = rows[rows.length-1];
+  var totalBal  = last.bal;
+  var totalProf = totalBal - principal;
+  var pct       = (totalProf/principal*100).toFixed(2);
+  var pageW     = doc.internal.pageSize.getWidth();
+  var margin    = 14;
 
-      // Show saved badge
-      const badge = document.getElementById('savedBadge');
-      if (badge && data.savedAt) {
-        badge.textContent = 'Data terakhir: ' + data.savedAt;
-        badge.classList.add('show');
-      }
-      return true;
-    } catch(e) { return false; }
-  }
+  // Header band
+  doc.setFillColor(249,115,22);
+  doc.rect(0,0,pageW,36,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(15);
+  doc.text('COMPOUND GAIN REPORT', margin, 12);
+  doc.setFont('helvetica','italic');
+  doc.setFontSize(8);
+  doc.setTextColor(255,235,200);
+  doc.text('"It\'s a marathon, not a sprint"', margin, 21);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(255,255,255);
+  doc.text('Rate: '+rate+'%/hari  |  '+numDays+' hari  |  '+wknd, margin, 30);
 
-  // Auto calculate on load
-  const hasData = loadData();
-  calculate();
+  var now = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  doc.setFontSize(6.5);
+  doc.setTextColor(255,220,180);
+  doc.text('Generated: '+now, pageW-margin, 30, {align:'right'});
 
-  // ═══ Export PDF ═══════════════════════════════════════════
-  function exportPDF() {
-    if (!tableData || tableData.length === 0) {
-      alert('Klik Calculate dulu sebelum export PDF!');
-      return;
-    }
+  // Summary boxes
+  var bw = (pageW - margin*2 - 9) / 4;
+  var by = 42;
+  var summaries = [
+    {label:'PRINCIPAL',    val:fmtMoney(principal), rc:[30,30,40]},
+    {label:'TOTAL BALANCE',val:fmtMoney(totalBal),  rc:[30,30,40]},
+    {label:'TOTAL PROFIT', val:fmtMoney(totalProf), rc:[10,100,50]},
+    {label:'TOTAL GAIN',   val:'+'+pct+'%',          rc:[200,80,10]},
+  ];
+  summaries.forEach(function(s,i) {
+    var bx = margin + i*(bw+3);
+    doc.setFillColor(245,245,248);
+    doc.roundedRect(bx,by,bw,18,2,2,'F');
+    doc.setDrawColor(220,220,228);
+    doc.roundedRect(bx,by,bw,18,2,2,'S');
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(6);
+    doc.setTextColor(140,140,160);
+    doc.text(s.label, bx+bw/2, by+6, {align:'center'});
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(s.rc[0],s.rc[1],s.rc[2]);
+    doc.text(s.val, bx+bw/2, by+14, {align:'center'});
+  });
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  // Table
+  var trows = rows.map(function(r,i) {
+    return [r.day, r.dateStr, fmtMoney(r.profit), fmtMoney(r.cum), fmtMoney(r.bal), doneState[i]?'✓':'○'];
+  });
 
-    const principal  = parseFloat(document.getElementById('principal').value) || 1000;
-    const rate       = parseFloat(document.getElementById('profitRate').value) || 1;
-    const numDays    = parseInt(document.getElementById('days').value) || 20;
-    const wkndTxt    = includeWeekends ? 'Termasuk Weekend' : 'Tanpa Weekend';
-
-    const lastRow   = tableData[tableData.length - 1];
-    const totalBal  = lastRow.balance;
-    const totalProf = totalBal - principal;
-    const pct       = (totalProf / principal * 100).toFixed(2);
-
-    const pageW = doc.internal.pageSize.getWidth();
-    const margin = 14;
-    let y = 16;
-
-    // ── Header ──────────────────────────────────────────────
-    doc.setFillColor(249, 115, 22);
-    doc.rect(0, 0, pageW, 28, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('COMPOUND GAIN REPORT', margin, 12);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text(
-      'Rate: ' + rate + '%/hari  |  ' + numDays + ' hari  |  ' + wkndTxt +
-      '  |  ' + (tableData[0]?.dateStr || '') + ' s/d ' + (lastRow?.dateStr || ''),
-      margin, 20
-    );
-
-    // Generated date
-    const genDate = new Date().toLocaleDateString('id-ID', {
-      day: '2-digit', month: 'long', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
-    doc.setFontSize(7);
-    doc.setTextColor(255, 220, 180);
-    doc.text('Generated: ' + genDate, pageW - margin, 20, { align: 'right' });
-
-    y = 38;
-
-    // ── Summary boxes ────────────────────────────────────────
-    const boxW = (pageW - margin * 2 - 9) / 4;
-    const summaries = [
-      { label: 'PRINCIPAL',    value: fmtMoney(principal),  color: [30, 30, 40] },
-      { label: 'TOTAL BALANCE',value: fmtMoney(totalBal),   color: [30, 30, 40] },
-      { label: 'TOTAL PROFIT', value: fmtMoney(totalProf),  color: [10, 100, 50] },
-      { label: 'TOTAL GAIN',   value: '+' + pct + '%',      color: [200, 80, 10] },
-    ];
-
-    summaries.forEach((s, i) => {
-      const bx = margin + i * (boxW + 3);
-      doc.setFillColor(245, 245, 248);
-      doc.roundedRect(bx, y, boxW, 18, 2, 2, 'F');
-      doc.setDrawColor(220, 220, 228);
-      doc.roundedRect(bx, y, boxW, 18, 2, 2, 'S');
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.5);
-      doc.setTextColor(140, 140, 160);
-      doc.text(s.label, bx + boxW / 2, y + 5.5, { align: 'center' });
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.setTextColor(...s.color);
-      doc.text(s.value, bx + boxW / 2, y + 13, { align: 'center' });
-    });
-
-    y += 26;
-
-    // ── Table ─────────────────────────────────────────────────
-    const rows = tableData.map((r, i) => [
-      r.day,
-      r.dateStr,
-      fmtMoney(r.profit),
-      fmtMoney(r.cumProfit),
-      fmtMoney(r.balance),
-      doneState[i] ? '✓' : '○'
-    ]);
-
-    doc.autoTable({
-      startY: y,
-      head: [['#', 'Tanggal', 'Daily Profit', 'Σ Profit', 'Balance', 'Done']],
-      body: rows,
-      margin: { left: margin, right: margin },
-      styles: {
-        fontSize: 8,
-        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
-        font: 'helvetica',
-        lineColor: [220, 220, 228],
-        lineWidth: 0.3,
-        textColor: [30, 30, 40],
-      },
-      headStyles: {
-        fillColor: [30, 30, 42],
-        textColor: [255, 255, 255],
-        fontStyle: 'bold',
-        fontSize: 8,
-        halign: 'center',
-      },
-      columnStyles: {
-        0: { halign: 'center', cellWidth: 12 },
-        1: { halign: 'left',   cellWidth: 42, textColor: [180, 80, 10] },
-        2: { halign: 'right',  cellWidth: 34, textColor: [10, 120, 60] },
-        3: { halign: 'right',  cellWidth: 34, textColor: [60, 60, 80]  },
-        4: { halign: 'right',  cellWidth: 46, fontStyle: 'bold' },
-        5: { halign: 'center', cellWidth: 14, textColor: [10, 120, 60] },
-      },
-      alternateRowStyles: { fillColor: [249, 249, 252] },
-      didDrawPage: function(data) {
-        // Footer di setiap halaman
-        const pTotal = doc.internal.getNumberOfPages();
-        const pCur   = doc.internal.getCurrentPageInfo().pageNumber;
-        doc.setFontSize(7);
-        doc.setTextColor(160, 160, 175);
-        doc.setFont('helvetica', 'normal');
-        doc.text(
-          'Compound Gain Report  |  Halaman ' + pCur + ' dari ' + pTotal,
-          pageW / 2,
-          doc.internal.pageSize.getHeight() - 8,
-          { align: 'center' }
-        );
-        doc.text(
-          'Principal: ' + fmtMoney(principal) + '  |  Rate: ' + rate + '%/hari  |  ' + numDays + ' hari',
-          margin,
-          doc.internal.pageSize.getHeight() - 8
-        );
-      },
-      willDrawCell: function(data) {
-        // Highlight baris terakhir
-        if (data.row.index === tableData.length - 1 && data.section === 'body') {
-          data.cell.styles.fillColor = [255, 242, 230];
-          data.cell.styles.fontStyle = 'bold';
+  doc.autoTable({
+    startY: 68,
+    head: [['#','Tanggal','Daily Profit','Σ Profit','Balance','Done']],
+    body: trows,
+    margin: {left:margin, right:margin},
+    styles: { fontSize:7.5, cellPadding:{top:3,bottom:3,left:4,right:4}, lineColor:[220,220,228], lineWidth:0.3, textColor:[30,30,40] },
+    headStyles: { fillColor:[30,30,42], textColor:[255,255,255], fontStyle:'bold', fontSize:8, halign:'center' },
+    columnStyles: {
+      0: { halign:'center', cellWidth:12 },
+      1: { halign:'left',   cellWidth:44, textColor:[180,80,10] },
+      2: { halign:'right',  cellWidth:34, textColor:[10,120,60] },
+      3: { halign:'right',  cellWidth:34, textColor:[60,60,80]  },
+      4: { halign:'right',  cellWidth:40, fontStyle:'bold' },
+      5: { halign:'center', cellWidth:22, textColor:[10,120,60] },
+    },
+    alternateRowStyles: { fillColor:[249,249,252] },
+    didDrawPage: function(data) {
+      var pTotal = doc.internal.getNumberOfPages();
+      var pCur   = doc.internal.getCurrentPageInfo().pageNumber;
+      doc.setFontSize(7); doc.setTextColor(160,160,175); doc.setFont('helvetica','normal');
+      doc.text('Halaman '+pCur+' dari '+pTotal, pageW/2, doc.internal.pageSize.getHeight()-8, {align:'center'});
+      doc.text('Principal: '+fmtMoney(principal)+'  |  Rate: '+rate+'%/hari  |  '+numDays+' hari',
+        margin, doc.internal.pageSize.getHeight()-8);
+    },
+    willDrawCell: function(data) {
+      if (data.section==='body') {
+        var i = data.row.index;
+        if (doneState[i]) {
+          data.cell.styles.fillColor = [240,255,244];
+          data.cell.styles.textDecoration = 'line-through';
         }
+        if (i === rows.length-1) { data.cell.styles.fontStyle='bold'; }
       }
-    });
+    }
+  });
 
-    // ── Save ──────────────────────────────────────────────────
-    const currSymbol = currency === 'IDR' ? 'IDR' : 'USD';
-    const filename = 'compound-gain-' + currSymbol + '-' + rate + 'pct-' + numDays + 'hari.pdf';
-    doc.save(filename);
+  // Congratulation page if all done
+  var allDone = rows.length > 0;
+  for (var k = 0; k < rows.length; k++) { if (!doneState[k]) { allDone=false; break; } }
+  if (allDone) {
+    doc.addPage();
+    var cpW = doc.internal.pageSize.getWidth();
+    var cpH = doc.internal.pageSize.getHeight();
+    doc.setFillColor(10,40,20);
+    doc.rect(0,0,cpW,cpH,'F');
+    doc.setFillColor(34,197,94);
+    doc.circle(cpW/2, cpH/2+30, 36,'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(26);
+    doc.setTextColor(34,197,94);
+    doc.text('Congratulation!', cpW/2, cpH/2-20, {align:'center'});
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(11);
+    doc.setTextColor(160,224,176);
+    doc.text('Semua target hari telah kamu capai!', cpW/2, cpH/2, {align:'center'});
+    doc.text('Kerja keras dan konsistensimu terbayar.', cpW/2, cpH/2+12, {align:'center'});
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(100,180,130);
+    doc.text('"It\'s a marathon, not a sprint"', cpW/2, cpH/2+30, {align:'center'});
   }
+
+  var curr = currency==='IDR' ? 'IDR' : 'USD';
+  doc.save('compound-gain-'+curr+'-'+rate+'pct-'+numDays+'hari.pdf');
+}
+
+// ── Auto load & calculate ──────────────────────────────────────
+loadData();
+calculate();
 </script>
-<div class="save-toast" id="saveToast">✓ Data tersimpan!</div>
-</body>
-</html>
+
+
+</body></html>
