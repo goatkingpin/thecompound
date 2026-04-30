@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0059)file:///C:/Users/User/Downloads/compound_calculator_28.html -->
-<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="id">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compound Gain Calculator</title>
-<script src="./index_files/jspdf.umd.min.js.download"></script>
-<script src="./index_files/jspdf.plugin.autotable.min.js.download"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root {
   --bg: #0a0a0f;
@@ -261,7 +261,7 @@ body {
   <div class="badge">⚡ Compound Calculator</div>
   <h1>Compound Gain</h1>
   <p class="tagline">"It's a marathon, not a sprint"</p>
-  <div class="saved-badge show" id="savedBadge">Data terakhir: 30/4/2026, 09.00.33</div>
+  <div class="saved-badge" id="savedBadge"></div>
 </div>
 
 <!-- Input Card -->
@@ -289,8 +289,8 @@ body {
   <div class="toggle-row">
     <span>Mata Uang</span>
     <div class="tog">
-      <button class="" id="btn-usd" onclick="setCurrency(&#39;USD&#39;)">USD $</button>
-      <button id="btn-idr" onclick="setCurrency(&#39;IDR&#39;)" class="on">IDR Rp</button>
+      <button class="on" id="btn-usd" onclick="setCurrency('USD')">USD $</button>
+      <button id="btn-idr" onclick="setCurrency('IDR')">IDR Rp</button>
     </div>
   </div>
   <div class="toggle-row">
@@ -301,53 +301,53 @@ body {
     </div>
   </div>
 
-  <button class="calc-btn" onclick="calculate()">Hitung →</button>
+  <button class="calc-btn" onclick="calculate()">Hitung &rarr;</button>
 </div>
 
 <!-- Result -->
-<div class="result-card show" id="result-card">
+<div class="result-card" id="result-card">
   <div class="result-main">
     <div class="lbl">Total Balance</div>
-    <div class="val" id="r-balance">Rp 12.201.900.399</div>
-    <div class="gain" id="r-gain">+22.02%</div>
+    <div class="val" id="r-balance">$0</div>
+    <div class="gain" id="r-gain">+0%</div>
   </div>
   <div class="result-side">
-    <div class="mini"><div class="l">Total Profit</div><div class="v" id="r-profit">Rp 2.201.900.399</div></div>
-    <div class="mini"><div class="l">Avg/Hari</div><div class="v" id="r-avg">Rp 110.095.020</div></div>
-    <div class="mini"><div class="l">Hari</div><div class="v" id="r-days">20</div></div>
+    <div class="mini"><div class="l">Total Profit</div><div class="v" id="r-profit">$0</div></div>
+    <div class="mini"><div class="l">Avg/Hari</div><div class="v" id="r-avg">$0</div></div>
+    <div class="mini"><div class="l">Hari</div><div class="v" id="r-days">0</div></div>
   </div>
 </div>
 
 <!-- Table -->
-<div id="tableSection" style="display: block;">
+<div id="tableSection" style="display:none">
 
   <!-- Print header -->
   <div class="print-header" id="printHeader">
     <div style="border-bottom:2px solid #e0e0e0;padding-bottom:10px;margin-bottom:14px;">
       <div style="font-size:16pt;font-weight:700;">Compound Gain Report</div>
       <div style="font-size:9pt;color:#888;font-style:italic;">"It's a marathon, not a sprint"</div>
-      <div style="font-size:8pt;color:#999;margin-top:2px;" id="print-subtitle">Rate: 1%/hari | 20 hari | Termasuk Weekend</div>
+      <div style="font-size:8pt;color:#999;margin-top:2px;" id="print-subtitle"></div>
     </div>
-    <div id="print-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;border:1px solid #e0e0e0;border-radius:6px;padding:10px;"><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Principal</div><div style="font-size:11pt;font-weight:700;color:#000;">Rp 10.000.000.000</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Balance</div><div style="font-size:11pt;font-weight:700;color:#000;">Rp 12.201.900.399</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Profit</div><div style="font-size:11pt;font-weight:700;color:#166534;">Rp 2.201.900.399</div></div><div style="border:1px solid #e0e0e0;border-radius:5px;padding:8px;"><div style="font-size:8pt;color:#888;text-transform:uppercase;">Total Gain</div><div style="font-size:11pt;font-weight:700;color:#c2410c;">+22.02%</div></div></div>
+    <div id="print-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;border:1px solid #e0e0e0;border-radius:6px;padding:10px;"></div>
   </div>
 
   <div class="tbl-header">
     <div class="tbl-title">Rincian Harian</div>
     <div class="tbl-meta">
-      <div class="tbl-count" id="tbl-count">20 hari</div>
-      <div class="done-count" id="done-count" style="color: var(--text3);">0 / 20 done</div>
+      <div class="tbl-count" id="tbl-count">0 hari</div>
+      <div class="done-count" id="done-count">0 / 0 done</div>
     </div>
     <div class="btn-group">
       <button class="btn btn-save" onclick="saveData()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 5L11 3H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5z"></path><path d="M10 13V9H6v4"></path><path d="M6 3v3h5"></path></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 5L11 3H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5z"/><path d="M10 13V9H6v4"/><path d="M6 3v3h5"/></svg>
         Simpan
       </button>
       <button class="btn btn-print" onclick="window.print()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"></rect><path d="M5 7V3h6v4"></path><path d="M5 11h6"></path></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V3h6v4"/><path d="M5 11h6"/></svg>
         Print A4
       </button>
       <button class="btn btn-pdf" onclick="exportPDF()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z"></path><path d="M9 2v4h4"></path></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z"/><path d="M9 2v4h4"/></svg>
         Export PDF
       </button>
     </div>
@@ -361,12 +361,12 @@ body {
         <span>#</span>
         <span>Tanggal</span>
         <span style="text-align:right">Profit</span>
-        <span style="text-align:right">Σ Profit</span>
+        <span style="text-align:right">&Sigma; Profit</span>
         <span style="text-align:right">Balance</span>
         <span>Done</span>
       </div>
       <div class="tbl-scroll">
-        <div class="tbl-body" id="tbl-body"><div class="tbl-row"><div class="r-day">1</div><div><span class="r-date" id="ds-0" onclick="openEdit(0)">30 Apr 2026 Kam</span><input class="r-date-input" id="di-0" type="date" value="2026-04-29" onchange="editDate(0,this.value)" onblur="closeEdit(0)"></div><div class="r-profit">Rp 100.000.000</div><div class="r-sum">Rp 100.000.000</div><div class="r-bal">Rp 10.100.000.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(0)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">2</div><div><span class="r-date" id="ds-1" onclick="openEdit(1)">01 Mei 2026 Jum</span><input class="r-date-input" id="di-1" type="date" value="2026-04-30" onchange="editDate(1,this.value)" onblur="closeEdit(1)"></div><div class="r-profit">Rp 101.000.000</div><div class="r-sum">Rp 201.000.000</div><div class="r-bal">Rp 10.201.000.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(1)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">3</div><div><span class="r-date" id="ds-2" onclick="openEdit(2)">02 Mei 2026 Sab</span><input class="r-date-input" id="di-2" type="date" value="2026-05-01" onchange="editDate(2,this.value)" onblur="closeEdit(2)"></div><div class="r-profit">Rp 102.010.000</div><div class="r-sum">Rp 303.010.000</div><div class="r-bal">Rp 10.303.010.000</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(2)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">4</div><div><span class="r-date" id="ds-3" onclick="openEdit(3)">03 Mei 2026 Min</span><input class="r-date-input" id="di-3" type="date" value="2026-05-02" onchange="editDate(3,this.value)" onblur="closeEdit(3)"></div><div class="r-profit">Rp 103.030.100</div><div class="r-sum">Rp 406.040.100</div><div class="r-bal">Rp 10.406.040.100</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(3)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">5</div><div><span class="r-date" id="ds-4" onclick="openEdit(4)">04 Mei 2026 Sen</span><input class="r-date-input" id="di-4" type="date" value="2026-05-03" onchange="editDate(4,this.value)" onblur="closeEdit(4)"></div><div class="r-profit">Rp 104.060.401</div><div class="r-sum">Rp 510.100.501</div><div class="r-bal">Rp 10.510.100.501</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(4)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">6</div><div><span class="r-date" id="ds-5" onclick="openEdit(5)">05 Mei 2026 Sel</span><input class="r-date-input" id="di-5" type="date" value="2026-05-04" onchange="editDate(5,this.value)" onblur="closeEdit(5)"></div><div class="r-profit">Rp 105.101.005</div><div class="r-sum">Rp 615.201.506</div><div class="r-bal">Rp 10.615.201.506</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(5)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">7</div><div><span class="r-date" id="ds-6" onclick="openEdit(6)">06 Mei 2026 Rab</span><input class="r-date-input" id="di-6" type="date" value="2026-05-05" onchange="editDate(6,this.value)" onblur="closeEdit(6)"></div><div class="r-profit">Rp 106.152.015</div><div class="r-sum">Rp 721.353.521</div><div class="r-bal">Rp 10.721.353.521</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(6)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">8</div><div><span class="r-date" id="ds-7" onclick="openEdit(7)">07 Mei 2026 Kam</span><input class="r-date-input" id="di-7" type="date" value="2026-05-06" onchange="editDate(7,this.value)" onblur="closeEdit(7)"></div><div class="r-profit">Rp 107.213.535</div><div class="r-sum">Rp 828.567.056</div><div class="r-bal">Rp 10.828.567.056</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(7)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">9</div><div><span class="r-date" id="ds-8" onclick="openEdit(8)">08 Mei 2026 Jum</span><input class="r-date-input" id="di-8" type="date" value="2026-05-07" onchange="editDate(8,this.value)" onblur="closeEdit(8)"></div><div class="r-profit">Rp 108.285.671</div><div class="r-sum">Rp 936.852.727</div><div class="r-bal">Rp 10.936.852.727</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(8)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">10</div><div><span class="r-date" id="ds-9" onclick="openEdit(9)">09 Mei 2026 Sab</span><input class="r-date-input" id="di-9" type="date" value="2026-05-08" onchange="editDate(9,this.value)" onblur="closeEdit(9)"></div><div class="r-profit">Rp 109.368.527</div><div class="r-sum">Rp 1.046.221.254</div><div class="r-bal">Rp 11.046.221.254</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(9)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">11</div><div><span class="r-date" id="ds-10" onclick="openEdit(10)">10 Mei 2026 Min</span><input class="r-date-input" id="di-10" type="date" value="2026-05-09" onchange="editDate(10,this.value)" onblur="closeEdit(10)"></div><div class="r-profit">Rp 110.462.213</div><div class="r-sum">Rp 1.156.683.467</div><div class="r-bal">Rp 11.156.683.467</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(10)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">12</div><div><span class="r-date" id="ds-11" onclick="openEdit(11)">11 Mei 2026 Sen</span><input class="r-date-input" id="di-11" type="date" value="2026-05-10" onchange="editDate(11,this.value)" onblur="closeEdit(11)"></div><div class="r-profit">Rp 111.566.835</div><div class="r-sum">Rp 1.268.250.301</div><div class="r-bal">Rp 11.268.250.301</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(11)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">13</div><div><span class="r-date" id="ds-12" onclick="openEdit(12)">12 Mei 2026 Sel</span><input class="r-date-input" id="di-12" type="date" value="2026-05-11" onchange="editDate(12,this.value)" onblur="closeEdit(12)"></div><div class="r-profit">Rp 112.682.503</div><div class="r-sum">Rp 1.380.932.804</div><div class="r-bal">Rp 11.380.932.804</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(12)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">14</div><div><span class="r-date" id="ds-13" onclick="openEdit(13)">13 Mei 2026 Rab</span><input class="r-date-input" id="di-13" type="date" value="2026-05-12" onchange="editDate(13,this.value)" onblur="closeEdit(13)"></div><div class="r-profit">Rp 113.809.328</div><div class="r-sum">Rp 1.494.742.132</div><div class="r-bal">Rp 11.494.742.132</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(13)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">15</div><div><span class="r-date" id="ds-14" onclick="openEdit(14)">14 Mei 2026 Kam</span><input class="r-date-input" id="di-14" type="date" value="2026-05-13" onchange="editDate(14,this.value)" onblur="closeEdit(14)"></div><div class="r-profit">Rp 114.947.421</div><div class="r-sum">Rp 1.609.689.554</div><div class="r-bal">Rp 11.609.689.554</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(14)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">16</div><div><span class="r-date" id="ds-15" onclick="openEdit(15)">15 Mei 2026 Jum</span><input class="r-date-input" id="di-15" type="date" value="2026-05-14" onchange="editDate(15,this.value)" onblur="closeEdit(15)"></div><div class="r-profit">Rp 116.096.896</div><div class="r-sum">Rp 1.725.786.449</div><div class="r-bal">Rp 11.725.786.449</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(15)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">17</div><div><span class="r-date" id="ds-16" onclick="openEdit(16)">16 Mei 2026 Sab</span><input class="r-date-input" id="di-16" type="date" value="2026-05-15" onchange="editDate(16,this.value)" onblur="closeEdit(16)"></div><div class="r-profit">Rp 117.257.864</div><div class="r-sum">Rp 1.843.044.314</div><div class="r-bal">Rp 11.843.044.314</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(16)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">18</div><div><span class="r-date" id="ds-17" onclick="openEdit(17)">17 Mei 2026 Min</span><input class="r-date-input" id="di-17" type="date" value="2026-05-16" onchange="editDate(17,this.value)" onblur="closeEdit(17)"></div><div class="r-profit">Rp 118.430.443</div><div class="r-sum">Rp 1.961.474.757</div><div class="r-bal">Rp 11.961.474.757</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(17)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">19</div><div><span class="r-date" id="ds-18" onclick="openEdit(18)">18 Mei 2026 Sen</span><input class="r-date-input" id="di-18" type="date" value="2026-05-17" onchange="editDate(18,this.value)" onblur="closeEdit(18)"></div><div class="r-profit">Rp 119.614.748</div><div class="r-sum">Rp 2.081.089.504</div><div class="r-bal">Rp 12.081.089.504</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(18)"></button><span class="done-label ">🎉</span></div></div><div class="tbl-row"><div class="r-day">20</div><div><span class="r-date" id="ds-19" onclick="openEdit(19)">19 Mei 2026 Sel</span><input class="r-date-input" id="di-19" type="date" value="2026-05-18" onchange="editDate(19,this.value)" onblur="closeEdit(19)"></div><div class="r-profit">Rp 120.810.895</div><div class="r-sum">Rp 2.201.900.399</div><div class="r-bal">Rp 12.201.900.399</div><div class="done-cell r-done"><button class="done-btn " onclick="toggleDone(19)"></button><span class="done-label ">🎉</span></div></div></div>
+        <div class="tbl-body" id="tbl-body"></div>
       </div>
     </div>
   </div>
@@ -379,7 +379,7 @@ body {
     <div class="congrat-title">Congratulation!</div>
     <div class="congrat-msg">Semua target hari telah kamu capai!<br>Kerja keras dan konsistensimu terbayar.</div>
     <div class="congrat-quote">"It's a marathon, not a sprint"</div>
-    <button class="congrat-btn" onclick="document.getElementById(&#39;congrat-overlay&#39;).classList.remove(&#39;show&#39;)">Terima Kasih 🙌</button>
+    <button class="congrat-btn" onclick="document.getElementById('congrat-overlay').classList.remove('show')">Terima Kasih 🙌</button>
   </div>
 </div>
 
@@ -738,6 +738,5 @@ function exportPDF() {
 loadData();
 calculate();
 </script>
-
-
-</body></html>
+</body>
+</html>
